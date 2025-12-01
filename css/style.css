@@ -1,8 +1,26 @@
 body {
-  font-family: "Segoe UI", sans-serif;
+  font-family: sans-serif;
   background-color: #121212;
   color: #e0e0e0;
   margin: 0;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+body.light-theme {
+  background-color: #f5f5f5;
+  color: #222;
+}
+body.light-theme .sidebar {
+  background: linear-gradient(135deg, #ddd, #eee);
+}
+body.light-theme .sidebar a {
+  color: #222;
+}
+body.light-theme .sidebar a:hover {
+  background: #6A0DAD;
+  color: white;
+}
+body.light-theme .card {
+  background-color: #fff;
 }
 
 .sidebar {
@@ -11,71 +29,90 @@ body {
   left: 0;
   width: 220px;
   height: 100vh;
-  background-color: #1e1e2f;
+  background: linear-gradient(135deg, #6A0DAD, #00C9A7);
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 .sidebar a {
-  color: #e0e0e0;
+  color: white;
   text-decoration: none;
   padding: 0.75rem 1rem;
   border-radius: 6px;
-  font-weight: bold;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
 }
 .sidebar a:hover {
-  background-color: #9c27b0;
-  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
 }
 
 .panel {
   margin-left: 240px;
   padding: 2rem;
 }
-.panel .card {
-  background-color: #1e1e2f;
-  border-radius: 10px;
+
+.card {
+  background-color: #1E1E2F;
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
 }
-.panel h2 {
-  color: #9c27b0;
+.card:hover {
+  transform: translateY(-3px);
+}
+.card h2 {
+  color: #00C9A7;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
 
 button {
-  background-color: #9c27b0;
+  background: linear-gradient(135deg, #6A0DAD, #00C9A7);
   color: white;
   border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
+  font-family: sans-serif;
   transition: 0.3s;
 }
 button:hover {
-  background-color: #ba68c8;
+  opacity: 0.9;
+  transform: scale(1.05);
 }
 
 input {
   background-color: #2c2c3c;
   color: #e0e0e0;
   border: 1px solid #555;
-  padding: 0.5rem;
+  padding: 0.6rem;
   border-radius: 6px;
+  font-family: sans-serif;
 }
 
-#habit-list li, #task-list li {
-  background: #1e1e2f;
+#habits li,
+#task-list li {
+  background: #1E1E2F;
   margin: 0.5rem 0;
   padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background 0.3s ease;
+}
+#habits li:hover,
+#task-list li:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 @media (max-width: 768px) {
