@@ -115,6 +115,105 @@ input {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.overview .overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.overview .overview-header .badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: #e0e0e0;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.overview .overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.overview .overview-grid .overview-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 1rem;
+}
+.overview .overview-grid .overview-item .label {
+  display: block;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
+}
+.overview .overview-grid .overview-item .value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #00C9A7;
+}
+.overview .overview-grid .overview-item .value.small {
+  font-size: 0.95rem;
+  color: #e0e0e0;
+  margin-top: 0.4rem;
+  display: inline-block;
+}
+.overview .overview-grid .overview-item .progress {
+  width: 100%;
+  height: 10px;
+  background: #2a2a3a;
+  border-radius: 999px;
+  margin-top: 0.35rem;
+  overflow: hidden;
+}
+.overview .overview-grid .overview-item .progress .progress-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #6A0DAD, #00C9A7);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+.overview .overview-quote {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}
+.overview .overview-quote p {
+  margin: 0;
+  font-style: italic;
+  opacity: 0.95;
+}
+
+.welcome, .quick-actions, .motivation, .upcoming {
+  background: #1E1E2F;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.welcome h2, .quick-actions h2, .motivation h2, .upcoming h2 {
+  margin-bottom: 0.75rem;
+  color: #00C9A7;
+}
+.welcome p, .quick-actions p, .motivation p, .upcoming p {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+.welcome button, .quick-actions button, .motivation button, .upcoming button {
+  margin-right: 0.5rem;
+  margin-top: 0.5rem;
+}
+.welcome ul, .quick-actions ul, .motivation ul, .upcoming ul {
+  list-style: none;
+  padding: 0;
+}
+.welcome ul li, .quick-actions ul li, .motivation ul li, .upcoming ul li {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: static;
@@ -129,5 +228,10 @@ input {
   }
   .card {
     padding: 1rem;
+  }
+}
+@media (max-width: 900px) {
+  .overview .overview-grid {
+    grid-template-columns: 1fr;
   }
 }/*# sourceMappingURL=style.css.map */

@@ -152,7 +152,7 @@ function initSettingsPage() {
     const currentLang = localStorage.getItem("lang") || "en";
     const newLang = currentLang === "en" ? "fa" : "en";
     localStorage.setItem("lang", newLang);
-    applyTranslations(); // Update texts immediately
+    applyTranslations();
   });
 
   clearBtn?.addEventListener("click", () => {
@@ -166,85 +166,100 @@ function initSettingsPage() {
 }
 
 // -----------------------------
-// Translations (global)
+// Home overview + extras
 // -----------------------------
-const translations = {
-  en: {
-    homeTitle: "Welcome to Habit Tracker",
-    homeDesc: "Track your habits, manage tasks, and stay productive.",
-    habitsTitle: "Habits",
-    tasksTitle: "Planner",
-    settingsTitle: "Settings",
-    themeBtn: "🌙 Dark / ☀️ Light",
-    langBtn: "English / فارسی",
-    clearBtn: "🗑️ Clear All",
-  },
-  fa: {
-    homeTitle: "به عادت‌سنج خوش آمدید",
-    homeDesc: "عادت‌هایت را پیگیری کن، وظایف را مدیریت کن و بهره‌ور بمان.",
-    habitsTitle: "عادت‌ها",
-    tasksTitle: "برنامه‌ریز",
-    settingsTitle: "تنظیمات",
-    themeBtn: "🌙 تاریک / ☀️ روشن",
-    langBtn: "English / فارسی",
-    clearBtn: "🗑️ پاک کردن همه",
+function initHomeOverview() {
+  const ov = document.getElementById("overview");
+  if (!ov) return;
+
+  const habitsData = JSON.parse(localStorage.getItem("habits")) || [];
+  const tasksData = JSON.parse(localStorage.getItem("tasks")) || [];
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const activeHabits = habitsData.length;
+  const tasksToday = tasksData.filter(t => t.date === todayStr).length;
+  const progressPercent = computeOverallProgress(habitsData);
+
+  document.getElementById("ov-habits").textContent = activeHabits;
+  document.getElementById("ov-tasks-today").textContent = tasksToday;
+  document.getElementById("ov-progress").style.width = `${progressPercent}%`;
+  document.getElementById("ov-progress-text").textContent = `${progressPercent}%`;
+
+  const quotes = [
+    "Small steps every day lead to big changes.",
+    "Consistency beats intensity.",
+    "Focus on the next right action.",
+    "Your future is built by your daily choices."
+  ];
+  document.getElementById("ov-quote").textContent =
+    quotes[new Date().getDay() % quotes.length];
+}
+
+function computeOverallProgress(habitsData) {
+  if (!habitsData.length) return 0;
+  const percents = habitsData.map(h => {
+    const goal = Math.max(1, parseInt(h.goal || 1, 10));
+    const streak = Math.max(0, parseInt(h.streak || 0, 10));
+    return Math.round(Math.min(100, (streak / goal) * 100));
+  });
+  return Math.round(percents.reduce((a, b) => a + b, 0) / percents.length);
+}
+
+function initHomeExtras() {
+  const dateEl = document.getElementById("today-date");
+  if (dateEl) {
+    const today = new Date();
+    dateEl.textContent = today.toDateString();
   }
-};
-
-function applyTranslations() {
-  const lang = localStorage.getItem("lang") || "en";
-  const t = translations[lang];
-
-  // Home page (if exists)
-  const homeCard = document.querySelector("main .card");
-  if (homeCard) {
-    const h2 = homeCard.querySelector("h2");
-    const p = homeCard.querySelector("p");
-    if (h2) h2.textContent = t.homeTitle;
-    if (p) p.textContent = t.homeDesc;
   }
 
-  // Habits section title (if exists)
-  const habitsSection = document.querySelector("#habits h2");
-  if (habitsSection) habitsSection.textContent = t.habitsTitle;
+  const quotes = [
+    "Small steps every day lead to big changes.",
+    "Consistency beats intensity.",
+    "Focus on the next right action.",
+    "Your future is built by your daily choices."
+  ];
+  const motEl = document.getElementById("motivation-text");
+  if (motEl) motEl.textContent = quotes[new Date().getDay() % quotes.length];
 
-  // Tasks section title (if exists)
-  const tasksSection = document.querySelector("#tasks h2");
-  if (tasksSection) tasksSection.textContent = t.tasksTitle;
+  const tasksData = JSON.parse(localStorage.getItem("tasks")) || [];
+  const upcomingEl = document.getElementBy
+  function initHomeExtras() {
+  const dateEl = document.getElementById("today-date");
+  if (dateEl) {
+    const today = new Date();
+    dateEl.textContent = today.toDateString();
+  }
 
-  // Settings page texts (if exists)
-  const settingsSectionTitle = document.querySelector("#settings h2");
-  if (settingsSectionTitle) settingsSectionTitle.textContent = t.settingsTitle;
-  const themeBtn = document.getElementById("theme-toggle");
-  const langBtn = document.getElementById("lang-toggle");
-  const clearBtn = document.getElementById("clear-data");
-  if (themeBtn) themeBtn.textContent = t.themeBtn;
-  if (langBtn) langBtn.textContent = t.langBtn;
-  if (clearBtn) clearBtn.textContent = t.clearBtn;
+  const quotes = [
+    "Small steps every day lead to big changes.",
+    "Consistency beats intensity.",
+    "Focus on the next right action.",
+    "Your future is built by your daily choices."
+  ];
+  const motEl = document.getElementById("motivation-text");
+  if (motEl) motEl.textContent = quotes[new Date().getDay() % quotes.length];
+
+  const tasksData = JSON.parse(localStorage.getItem("tasks")) || [];
+  const upcomingEl = document.getElementById("upcoming-list");
+  if (upcomingEl) {
+    upcomingEl.innerHTML = "";
+    tasksData.slice(0, 3).forEach(t => {
+      const li = document.createElement("li");
+      li.textContent = `${t.date} - ${t.name}`;
+      upcomingEl.appendChild(li);
+    });
+  }
 }
 
 // -----------------------------
-// Common init
-// -----------------------------
-function initCommon() {
-  // Apply saved theme
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "light") {
-    document.body.classList.add("light-theme");
-  } else {
-    document.body.classList.remove("light-theme");
-  }
-
-  // Apply translations
-  applyTranslations();
-}
-
-// -----------------------------
-// Boot
+// Boot sequence
 // -----------------------------
 window.addEventListener("DOMContentLoaded", () => {
-  initCommon();
-  initHabitsPage();
-  initTasksPage();
-  initSettingsPage();
+  initCommon();        // تنظیمات عمومی
+  initHomeOverview();  // کارت Overview
+  initHomeExtras();    // کارت‌های Welcome, Motivation, Upcoming
+  initHabitsPage();    // صفحه Habits
+  initTasksPage();     // صفحه Tasks
+  initSettingsPage();  // صفحه Settings
 });
