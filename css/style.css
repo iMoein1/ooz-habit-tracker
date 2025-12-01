@@ -1,0 +1,44 @@
+body {
+  font-family: sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  margin: 0;
+}
+
+header {
+  background: #4caf50;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+#add-habit {
+  display: flex;
+  justify-content: center;
+  margin: 1rem;
+}
+#add-habit input {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+}
+#add-habit button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+#habit-list {
+  margin: 1rem;
+}
+#habit-list ul {
+  list-style: none;
+  padding: 0;
+}
+#habit-list li {
+  background: white;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 5px;
+}/*# sourceMappingURL=style.css.map */
