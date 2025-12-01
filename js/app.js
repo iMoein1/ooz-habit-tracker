@@ -1,27 +1,251 @@
 // =============================
+// app.js — کامل با i18n (en/fa), RTL, toast, shortcuts, pages init
+// جایگزین کامل فایل js/app.js کن
+// =============================
+
+// =============================
+// TRANSLATIONS (انگلیسی و فارسی)
+// =============================
+const TRANSLATIONS = {
+  en: {
+    // Home
+    welcome_title: "Welcome back, ooz 👋",
+    welcome_sub: "Today is {date}. Stay productive!",
+    btn_add_habit: "➕ Add Habit",
+    btn_add_task: "➕ Add Task",
+    overview_active_habits: "Active habits",
+    overview_tasks_today: "Tasks today",
+    overview_overall_progress: "Overall progress",
+    quote_default: "Small steps every day lead to big changes.",
+    motivation_default: "Consistency beats intensity.",
+    upcoming_title: "Upcoming Tasks",
+
+    // Habits
+    habits_title: "Add New Habit",
+    habit_input_placeholder: "Habit name",
+    habit_goal_placeholder: "Goal (days)",
+    habit_add_btn: "➕ Add Habit",
+    habits_list_title: "Your Habits",
+    stats_title: "Habit Stats",
+    stats_total: "Total habits",
+    stats_best: "Best streak",
+    stats_avg: "Average progress",
+    tips_title: "Tips",
+    empty_habits: "You don't have any habits yet — add one to get started!",
+
+    // Tasks
+    tasks_add_title: "Add new task",
+    task_input_placeholder: "Task name",
+    task_date_placeholder: "Select date",
+    task_add_btn: "➕ Add Task",
+    task_filter_today: "📅 Show today",
+    productivity_title: "Today's productivity",
+    tasks_stats_title: "Task stats",
+    tasks_total: "Total tasks",
+    tasks_done: "Done tasks",
+    tasks_upcoming: "Upcoming (next 7 days)",
+    tasks_list_title: "Your tasks",
+    empty_tasks: "No tasks yet — add one to get started!",
+    toast_deleted: "Task deleted — Undo",
+
+    // Settings
+    settings_theme: "Theme",
+    btn_toggle_theme: "🌗 Toggle theme",
+    settings_language: "Language",
+    settings_lang_current: "Current:",
+    quick_actions: "Quick actions",
+    clear_data: "🧹 Clear all data",
+    export_data: "📦 Export data (JSON)",
+    import_data: "📥 Import data",
+    shortcuts_title: "Keyboard shortcuts",
+    about_title: "About ooz",
+    about_text: "ooz is a personal, beautiful, and practical habit & task tracker. Designed for focus, consistency, and delight.",
+
+    // Generic
+    btn_undo: "Undo",
+    btn_delete: "Delete",
+    btn_done: "Done",
+    placeholder_search: "Search...",
+  },
+
+  fa: {
+    // Home
+    welcome_title: "خوش برگشتی، ooz 👋",
+    welcome_sub: "امروز {date} است. به مسیرت ادامه بده!",
+    btn_add_habit: "➕ افزودن عادت",
+    btn_add_task: "➕ افزودن وظیفه",
+    overview_active_habits: "عادت‌های فعال",
+    overview_tasks_today: "وظایف امروز",
+    overview_overall_progress: "پیشرفت کلی",
+    quote_default: "قدم‌های کوچک روزانه، تغییرات بزرگ می‌سازند.",
+    motivation_default: "پیوستگی از شدت بهتر است.",
+    upcoming_title: "وظایف آینده",
+
+    // Habits
+    habits_title: "افزودن عادت جدید",
+    habit_input_placeholder: "نام عادت",
+    habit_goal_placeholder: "هدف (روز)",
+    habit_add_btn: "➕ افزودن عادت",
+    habits_list_title: "عادت‌های شما",
+    stats_title: "آمار عادت‌ها",
+    stats_total: "تعداد عادت‌ها",
+    stats_best: "بهترین استریک",
+    stats_avg: "میانگین پیشرفت",
+    tips_title: "نکات",
+    empty_habits: "هنوز عادتی اضافه نکرده‌ای — یکی اضافه کن تا شروع کنیم!",
+
+    // Tasks
+    tasks_add_title: "افزودن وظیفه جدید",
+    task_input_placeholder: "نام وظیفه",
+    task_date_placeholder: "انتخاب تاریخ",
+    task_add_btn: "➕ افزودن وظیفه",
+    task_filter_today: "📅 نمایش امروز",
+    productivity_title: "بهره‌وری امروز",
+    tasks_stats_title: "آمار وظایف",
+    tasks_total: "کل وظایف",
+    tasks_done: "وظایف انجام‌شده",
+    tasks_upcoming: "آینده (۷ روز آینده)",
+    tasks_list_title: "وظایف شما",
+    empty_tasks: "هنوز وظیفه‌ای نداری — یکی اضافه کن تا شروع کنیم!",
+    toast_deleted: "وظیفه حذف شد — بازگردانی",
+
+    // Settings
+    settings_theme: "قالب",
+    btn_toggle_theme: "🌗 تغییر قالب",
+    settings_language: "زبان",
+    settings_lang_current: "زبان فعلی:",
+    quick_actions: "اقدامات سریع",
+    clear_data: "🧹 پاک‌سازی همه داده‌ها",
+    export_data: "📦 خروجی (JSON)",
+    import_data: "📥 وارد کردن",
+    shortcuts_title: "میانبرهای صفحه‌کلید",
+    about_title: "دربارهٔ ooz",
+    about_text: "ooz یک برنامهٔ ساده و زیبا برای پیگیری عادت‌ها و وظایف است. طراحی‌شده برای تمرکز، پیوستگی و لذت.",
+
+    // Generic
+    btn_undo: "بازگردانی",
+    btn_delete: "حذف",
+    btn_done: "انجام شد",
+    placeholder_search: "جستجو...",
+  }
+};
+
+// =============================
+// Helpers for i18n
+// =============================
+function toPersianDigits(str) {
+  const map = { '0':'۰','1':'۱','2':'۲','3':'۳','4':'۴','5':'۵','6':'۶','7':'۷','8':'۸','9':'۹' };
+  return String(str).replace(/\d/g, d => map[d] ?? d);
+}
+
+function localizedDateString(lang, d = new Date()) {
+  try {
+    if (lang === "fa") {
+      return new Date(d).toLocaleDateString("fa-IR");
+    } else {
+      return new Date(d).toLocaleDateString("en-US");
+    }
+  } catch (err) {
+    return new Date(d).toDateString();
+  }
+}
+
+function applyTranslations() {
+  const lang = document.documentElement.lang || "en";
+  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+  // 1) Elements with data-i18n -> textContent
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (!key) return;
+    let text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
+    if (text.includes("{date}")) {
+      text = text.replace("{date}", localizedDateString(lang, new Date()));
+    }
+    el.textContent = text;
+  });
+
+  // 2) Placeholders
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    if (!key) return;
+    const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
+    el.setAttribute("placeholder", text);
+  });
+
+  // 3) title attributes
+  document.querySelectorAll("[data-i18n-title]").forEach(el => {
+    const key = el.getAttribute("data-i18n-title");
+    if (!key) return;
+    const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
+    el.setAttribute("title", text);
+  });
+
+  // 4) aria-labels
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => {
+    const key = el.getAttribute("data-i18n-aria");
+    if (!key) return;
+    const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
+    el.setAttribute("aria-label", text);
+  });
+
+  // 5) data-i18n-empty (for static empty placeholders)
+  document.querySelectorAll("[data-i18n-empty]").forEach(el => {
+    const key = el.getAttribute("data-i18n-empty");
+    if (!key) return;
+    const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
+    el.textContent = text;
+  });
+
+  // 6) Update dynamic small pieces (today-date, quotes, etc.)
+  const todayDateEl = document.getElementById("today-date");
+  if (todayDateEl) {
+    todayDateEl.textContent = localizedDateString(lang, new Date());
+  }
+
+  const ovQuote = document.getElementById("ov-quote");
+  if (ovQuote) {
+    ovQuote.textContent = dict.quote_default ?? TRANSLATIONS.en.quote_default;
+  }
+
+  const motEl = document.getElementById("motivation-text");
+  if (motEl) {
+    motEl.textContent = dict.motivation_default ?? TRANSLATIONS.en.motivation_default;
+  }
+
+  // 7) Convert numeric displays if desired (elements with data-i18n-num)
+  if (lang === "fa") {
+    document.querySelectorAll("[data-i18n-num]").forEach(el => {
+      el.textContent = toPersianDigits(el.textContent || "");
+    });
+  }
+}
+
+// =============================
 // Storage and globals
 // =============================
 let habits = JSON.parse(localStorage.getItem("habits")) || [];
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let habitChart = null; // Chart.js instance (Habits page)
+let habitChart = null;
+let trashBuffer = [];
 
 // =============================
-// Common init (theme, language)
+// Common init (theme, language, RTL)
 // =============================
 function initCommon() {
-  // Theme
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "light") document.body.classList.add("light-theme");
 
-  // Language
   const savedLang = localStorage.getItem("lang") || "en";
   document.documentElement.lang = savedLang;
-  applyTranslations(); // stub for now
+  applyTranslations();
+  applyRTLByLang();
 }
 
-// Simple i18n stub (extend later)
-function applyTranslations() {
-  // Placeholder: hook into your DOM text nodes if/when needed.
+// RTL helper
+function applyRTLByLang() {
+  const lang = document.documentElement.lang || "en";
+  document.body.classList.toggle("rtl", lang === "fa");
 }
 
 // =============================
@@ -43,55 +267,21 @@ function initHomeOverview() {
   const elTasksToday = document.getElementById("ov-tasks-today");
   const elProgBar = document.getElementById("ov-progress");
   const elProgText = document.getElementById("ov-progress-text");
-  const elQuote = document.getElementById("ov-quote");
 
-  if (elHabits) elHabits.textContent = String(activeHabits);
-  if (elTasksToday) elTasksToday.textContent = String(tasksToday);
+  if (elHabits) { elHabits.textContent = String(activeHabits); elHabits.setAttribute("data-i18n-num", ""); }
+  if (elTasksToday) { elTasksToday.textContent = String(tasksToday); elTasksToday.setAttribute("data-i18n-num", ""); }
   if (elProgBar) elProgBar.style.width = `${progressPercent}%`;
   if (elProgText) elProgText.textContent = `${progressPercent}%`;
 
-  const quotes = [
-    "Small steps every day lead to big changes.",
-    "Consistency beats intensity.",
-    "Focus on the next right action.",
-    "Your future is built by your daily choices."
-  ];
-  if (elQuote) elQuote.textContent = quotes[new Date().getDay() % quotes.length];
+  applyTranslations();
 }
 
 function initHomeExtras() {
-  // Welcome date
   const dateEl = document.getElementById("today-date");
-  if (dateEl) {
-    dateEl.textContent = new Date().toDateString();
-  }
+  if (dateEl) dateEl.textContent = localizedDateString(document.documentElement.lang || "en", new Date());
 
-  // Motivation
-  const quotes = [
-    "Small steps every day lead to big changes.",
-    "Consistency beats intensity.",
-    "Focus on the next right action.",
-    "Your future is built by your daily choices."
-  ];
   const motEl = document.getElementById("motivation-text");
-  if (motEl) motEl.textContent = quotes[new Date().getDay() % quotes.length];
-
-  // Upcoming tasks (next 3 by date order)
-  const upcomingEl = document.getElementById("upcoming-list");
-  if (upcomingEl) {
-    const tasksData = JSON.parse(localStorage.getItem("tasks")) || [];
-    const sorted = tasksData
-      .slice()
-      .sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0))
-      .slice(0, 3);
-
-    upcomingEl.innerHTML = "";
-    sorted.forEach(t => {
-      const li = document.createElement("li");
-      li.textContent = `${t.date} — ${t.name}`;
-      upcomingEl.appendChild(li);
-    });
-  }
+  if (motEl) motEl.textContent = TRANSLATIONS[document.documentElement.lang || "en"].motivation_default;
 }
 
 // =============================
@@ -104,10 +294,23 @@ function initHabitsPage() {
   const goalInput = document.getElementById("goal-input");
   const chartCanvas = document.getElementById("progressChart");
 
-  if (!list) return; // not on habits page
+  if (!list) return;
 
   function renderHabits() {
+    // remove any previous empty-state
+    const prevEmpty = list.parentElement.querySelector(".empty-state");
+    if (prevEmpty) prevEmpty.remove();
+
     list.innerHTML = "";
+    if (!habits || habits.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.setAttribute("data-i18n-empty", "empty_habits");
+      list.parentElement.appendChild(empty);
+      applyTranslations();
+      return;
+    }
+
     habits.forEach((habit, index) => {
       const li = document.createElement("li");
       const progressPercent = safePercent(habit.streak, habit.goal);
@@ -123,7 +326,7 @@ function initHabitsPage() {
       `;
 
       const btn = document.createElement("button");
-      btn.textContent = "✅ Done";
+      btn.textContent = TRANSLATIONS[document.documentElement.lang || "en"].btn_done || "Done";
       btn.addEventListener("click", () => markDone(index));
       li.appendChild(btn);
 
@@ -155,15 +358,8 @@ function initHabitsPage() {
     if (habitChart) habitChart.destroy();
     habitChart = new Chart(ctx, {
       type: "bar",
-      data: {
-        labels,
-        datasets: [{ label: "Progress (%)", data, backgroundColor: "#6A0DAD" }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, max: 100 } }
-      }
+      data: { labels, datasets: [{ label: "Progress (%)", data, backgroundColor: "#6A0DAD" }] },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
     });
   }
 
@@ -180,12 +376,19 @@ function initHabitsPage() {
     elTotal.textContent = String(total);
     elBest.textContent = String(best);
     elAvg.textContent = `${avg}%`;
+
+    // mark numbers for possible persian conversion
+    elTotal.setAttribute("data-i18n-num", "");
+    elBest.setAttribute("data-i18n-num", "");
+    elAvg.setAttribute("data-i18n-num", "");
+    applyTranslations();
   }
 
   addBtn?.addEventListener("click", () => {
     const name = (nameInput?.value || "").trim();
     const goal = parseInt(goalInput?.value || "0", 10);
     if (!name || !goal || goal <= 0) {
+      // inline simple alert — you can replace with inline error UI
       alert("Enter habit name and valid goal.");
       return;
     }
@@ -200,11 +403,11 @@ function initHabitsPage() {
 }
 
 // =============================
-// Tasks page (enhanced)
+// Tasks page
 // =============================
 function initTasksPage() {
   const list = document.getElementById("task-list");
-  if (!list) return; // not on tasks page
+  if (!list) return;
 
   const addTaskBtn = document.getElementById("add-task-btn");
   const nameInput = document.getElementById("task-input");
@@ -219,18 +422,32 @@ function initTasksPage() {
   const calPrev = document.getElementById("cal-prev");
   const calNext = document.getElementById("cal-next");
 
-  // Local state
   tasks = (tasks || []).map(t => ({ ...t, done: !!t.done }));
-  let selectedDate = null; // 'YYYY-MM-DD' or null
-  let calendarRef = getMonthRef(new Date()); // {year, month}
+  let selectedDate = null;
+  let calendarRef = getMonthRef(new Date());
 
   function renderTasks() {
+    // remove previous empty-state
+    const prevEmpty = list.parentElement.querySelector(".empty-state");
+    if (prevEmpty) prevEmpty.remove();
+
     list.innerHTML = "";
 
     const filtered = tasks.filter(t => {
       if (selectedDate) return t.date === selectedDate;
       return true;
     });
+
+    if (!filtered || filtered.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.setAttribute("data-i18n-empty", "empty_tasks");
+      list.parentElement.appendChild(empty);
+      applyTranslations();
+      updateProductivity();
+      renderTaskStats();
+      return;
+    }
 
     filtered.forEach(task => {
       const li = document.createElement("li");
@@ -267,15 +484,8 @@ function initTasksPage() {
 
       const delBtn = document.createElement("button");
       delBtn.className = "delete-btn";
-      delBtn.textContent = "❌ Delete";
-      delBtn.addEventListener("click", () => {
-        const idx = tasks.findIndex(t => t === task);
-        if (idx >= 0) tasks.splice(idx, 1);
-        persistTasks();
-        renderTasks();
-        updateProductivity();
-        renderTaskStats();
-      });
+      delBtn.textContent = TRANSLATIONS[document.documentElement.lang || "en"].btn_delete || "Delete";
+      delBtn.addEventListener("click", () => softDeleteTask(task, renderTasks, updateProductivity, renderTaskStats));
 
       actions.appendChild(delBtn);
       li.appendChild(left);
@@ -303,7 +513,7 @@ function initTasksPage() {
 
   filterTodayBtn?.addEventListener("click", () => {
     selectedDate = toYMD(new Date());
-    renderCalendar(); // highlight
+    renderCalendar();
     renderTasks();
   });
 
@@ -320,6 +530,8 @@ function initTasksPage() {
     const pct = Math.round((doneCount / todayTasks.length) * 100);
     prodBar.style.width = `${pct}%`;
     prodText.textContent = `${pct}%`;
+    prodText.setAttribute("data-i18n-num", "");
+    applyTranslations();
   }
 
   function renderTaskStats() {
@@ -343,6 +555,11 @@ function initTasksPage() {
     elTotal.textContent = String(total);
     elDone.textContent = String(done);
     elUpcoming.textContent = String(upcoming);
+
+    elTotal.setAttribute("data-i18n-num", "");
+    elDone.setAttribute("data-i18n-num", "");
+    elUpcoming.setAttribute("data-i18n-num", "");
+    applyTranslations();
   }
 
   function renderCalendar() {
@@ -352,15 +569,14 @@ function initTasksPage() {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
 
-    const monthName = firstDay.toLocaleString("en-US", { month: "long" });
+    const monthName = firstDay.toLocaleString(document.documentElement.lang === "fa" ? "fa-IR" : "en-US", { month: "long" });
     calLabel.textContent = `${monthName} ${year}`;
 
-    const startWeekday = firstDay.getDay(); // 0..6 (Sun..Sat)
+    const startWeekday = firstDay.getDay();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
     calGrid.innerHTML = "";
 
-    // Weekday labels
     ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(wd => {
       const hd = document.createElement("div");
       hd.className = "calendar-cell muted";
@@ -368,7 +584,6 @@ function initTasksPage() {
       calGrid.appendChild(hd);
     });
 
-    // Leading cells (prev month days)
     for (let i = 0; i < startWeekday; i++) {
       const dayNum = daysInPrevMonth - startWeekday + 1 + i;
       const cell = document.createElement("div");
@@ -377,7 +592,6 @@ function initTasksPage() {
       calGrid.appendChild(cell);
     }
 
-    // Current month
     for (let day = 1; day <= lastDay.getDate(); day++) {
       const cell = document.createElement("div");
       cell.className = "calendar-cell";
@@ -391,7 +605,7 @@ function initTasksPage() {
       cell.addEventListener("click", () => {
         selectedDate = cellDate;
         renderTasks();
-        renderCalendar(); // refresh highlight
+        renderCalendar();
       });
 
       calGrid.appendChild(cell);
@@ -400,37 +614,26 @@ function initTasksPage() {
 
   calPrev?.addEventListener("click", () => {
     const m = calendarRef.month - 1;
-    if (m < 0) {
-      calendarRef.month = 11;
-      calendarRef.year -= 1;
-    } else {
-      calendarRef.month = m;
-    }
+    if (m < 0) { calendarRef.month = 11; calendarRef.year -= 1; } else { calendarRef.month = m; }
     renderCalendar();
   });
 
   calNext?.addEventListener("click", () => {
     const m = calendarRef.month + 1;
-    if (m > 11) {
-      calendarRef.month = 0;
-      calendarRef.year += 1;
-    } else {
-      calendarRef.month = m;
-    }
+    if (m > 11) { calendarRef.month = 0; calendarRef.year += 1; } else { calendarRef.month = m; }
     renderCalendar();
   });
 
-  // Init
   renderTasks();
   renderCalendar();
 }
 
 // =============================
-// Settings page (enhanced)
+// Settings page
 // =============================
 function initSettingsPage() {
   const container = document.getElementById("settings");
-  if (!container) return; // not on settings page
+  if (!container) return;
 
   const themeBtn = document.getElementById("theme-toggle");
   const langBtn = document.getElementById("lang-toggle");
@@ -441,13 +644,11 @@ function initSettingsPage() {
   const importBtn = document.getElementById("import-data");
   const importFile = document.getElementById("import-file");
 
-  // Theme
   themeBtn?.addEventListener("click", () => {
     document.body.classList.toggle("light-theme");
     localStorage.setItem("theme", document.body.classList.contains("light-theme") ? "light" : "dark");
   });
 
-  // Language
   const savedLang = localStorage.getItem("lang") || "en";
   if (langCurrent) langCurrent.textContent = savedLang;
 
@@ -456,11 +657,10 @@ function initSettingsPage() {
     const newLang = currentLang === "en" ? "fa" : "en";
     localStorage.setItem("lang", newLang);
     document.documentElement.lang = newLang;
-    if (langCurrent) langCurrent.textContent = newLang;
     applyTranslations();
+    applyRTLByLang();
   });
 
-  // Clear all data
   clearBtn?.addEventListener("click", () => {
     if (!confirm("Are you sure you want to clear all data?")) return;
     localStorage.removeItem("habits");
@@ -471,13 +671,8 @@ function initSettingsPage() {
     location.reload();
   });
 
-  // Export data
   exportBtn?.addEventListener("click", () => {
-    const payload = {
-      exportedAt: new Date().toISOString(),
-      habits,
-      tasks
-    };
+    const payload = { exportedAt: new Date().toISOString(), habits, tasks };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -487,10 +682,7 @@ function initSettingsPage() {
     URL.revokeObjectURL(url);
   });
 
-  // Import data
-  importBtn?.addEventListener("click", () => {
-    importFile?.click();
-  });
+  importBtn?.addEventListener("click", () => { importFile?.click(); });
 
   importFile?.addEventListener("change", async (e) => {
     const file = e.target.files?.[0];
@@ -499,13 +691,10 @@ function initSettingsPage() {
       const text = await file.text();
       const payload = JSON.parse(text);
       if (!payload || typeof payload !== "object") throw new Error("Invalid JSON");
-
       habits = Array.isArray(payload.habits) ? payload.habits : [];
       tasks = Array.isArray(payload.tasks) ? payload.tasks : [];
-
       localStorage.setItem("habits", JSON.stringify(habits));
       localStorage.setItem("tasks", JSON.stringify(tasks));
-
       alert("Data imported successfully ✅");
       location.reload();
     } catch (err) {
@@ -518,14 +707,125 @@ function initSettingsPage() {
 }
 
 // =============================
+// Keyboard shortcuts (use e.code for keyboard layout independence)
+// =============================
+function initShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    const active = document.activeElement;
+    const typing = active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable);
+    if (typing) return;
+
+    const code = e.code;
+
+    if (code === "KeyH") { location.href = "index.html"; return; }
+    if (code === "KeyB") { location.href = "habits.html"; return; }
+    if (code === "KeyK") { location.href = "tasks.html"; return; }
+    if (code === "KeyS") { location.href = "settings.html"; return; }
+
+    if (code === "KeyD") {
+      document.body.classList.toggle("light-theme");
+      localStorage.setItem("theme", document.body.classList.contains("light-theme") ? "light" : "dark");
+      return;
+    }
+
+    if (code === "KeyL") {
+      const currentLang = localStorage.getItem("lang") || "en";
+      const newLang = currentLang === "en" ? "fa" : "en";
+      localStorage.setItem("lang", newLang);
+      document.documentElement.lang = newLang;
+      applyTranslations();
+      applyRTLByLang();
+      return;
+    }
+
+    if (code === "KeyN") {
+      const addHabitBtn = document.getElementById("add-btn");
+      if (addHabitBtn) { addHabitBtn.click(); return; }
+      const addTaskBtn = document.getElementById("add-task-btn");
+      if (addTaskBtn) { addTaskBtn.click(); return; }
+    }
+
+    if (code === "KeyT") {
+      const filterTodayBtn = document.getElementById("filter-today-btn");
+      if (filterTodayBtn) filterTodayBtn.click();
+      return;
+    }
+
+    if (e.key === "Escape") {
+      if (document.getElementById("calendar-grid")) {
+        if (typeof renderTasks === "function") renderTasks();
+        if (typeof renderCalendar === "function") renderCalendar();
+      }
+    }
+  });
+}
+
+// =============================
+// Toast (Undo) helpers
+// =============================
+function showToast(message, onUndo) {
+  const toast = document.getElementById("toast");
+  const text = document.getElementById("toast-text");
+  const undo = document.getElementById("toast-undo");
+  if (!toast || !text || !undo) return;
+
+  toast.style.display = "flex";
+  text.textContent = message;
+  toast.classList.add("show");
+
+  function hide() {
+    toast.classList.remove("show");
+    setTimeout(() => { toast.style.display = "none"; }, 200);
+    undo.removeEventListener("click", onUndoClick);
+    document.removeEventListener("keydown", escHandler);
+  }
+  function onUndoClick() { onUndo?.(); hide(); }
+  function escHandler(e) { if (e.key.toLowerCase() === "escape") hide(); }
+
+  undo.addEventListener("click", onUndoClick);
+  document.addEventListener("keydown", escHandler);
+
+  setTimeout(() => hide(), 5000);
+}
+
+function softDeleteTask(task, rerenderTasks, updateProductivity, renderStats) {
+  const idx = tasks.findIndex(t => t === task);
+  if (idx < 0) return;
+
+  const removed = tasks.splice(idx, 1)[0];
+  persistTasks();
+  rerenderTasks?.();
+  updateProductivity?.();
+  renderStats?.();
+
+  const entry = { item: removed, index: idx, finalized: false };
+  trashBuffer.push(entry);
+
+  entry.timeoutId = setTimeout(() => {
+    entry.finalized = true;
+    trashBuffer = trashBuffer.filter(x => x !== entry);
+  }, 5000);
+
+  const lang = document.documentElement.lang || "en";
+  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  showToast(dict.toast_deleted || TRANSLATIONS.en.toast_deleted, () => {
+    if (entry.finalized) return;
+    clearTimeout(entry.timeoutId);
+    const restoreIndex = Math.min(entry.index, tasks.length);
+    tasks.splice(restoreIndex, 0, entry.item);
+    persistTasks();
+    rerenderTasks?.();
+    updateProductivity?.();
+    renderStats?.();
+    trashBuffer = trashBuffer.filter(x => x !== entry);
+  });
+}
+
+// =============================
 // Helpers (shared)
 // =============================
-function persistHabits() {
-  localStorage.setItem("habits", JSON.stringify(habits));
-}
-function persistTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+function persistHabits() { localStorage.setItem("habits", JSON.stringify(habits)); }
+function persistTasks() { localStorage.setItem("tasks", JSON.stringify(tasks)); }
 
 function safePercent(streak, goal) {
   const g = Math.max(1, parseInt(goal || 1, 10));
@@ -550,12 +850,8 @@ function parseYMD(str) {
   const [y, m, d] = str.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
-function startOfDay(d) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-function getMonthRef(d) {
-  return { year: d.getFullYear(), month: d.getMonth() };
-}
+function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function getMonthRef(d) { return { year: d.getFullYear(), month: d.getMonth() }; }
 
 // =============================
 // Boot sequence
@@ -567,4 +863,5 @@ window.addEventListener("DOMContentLoaded", () => {
   initHabitsPage();
   initTasksPage();
   initSettingsPage();
+  initShortcuts();
 });

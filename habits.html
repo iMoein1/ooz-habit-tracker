@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Sidebar -->
   <div class="sidebar">
     <a href="index.html">🏠 Home</a>
     <a href="habits.html">📋 Habits</a>
@@ -14,46 +13,47 @@
     <a href="settings.html">⚙️ Settings</a>
   </div>
 
-  <!-- Panel -->
   <div class="panel">
     <div class="card">
-      <h2>Add New Habit</h2>
-      <input id="habit-input" placeholder="Habit name">
-      <input id="goal-input" type="number" placeholder="Goal (days)">
-      <button id="add-btn">➕ Add Habit</button>
+      <h2 data-i18n="habits_title">Add New Habit</h2>
+      <input id="habit-input" data-i18n-placeholder="habit_input_placeholder" placeholder="Habit name">
+      <input id="goal-input" type="number" data-i18n-placeholder="habit_goal_placeholder" placeholder="Goal (days)">
+      <button id="add-btn" data-i18n="habit_add_btn">➕ Add Habit</button>
+      <span id="habit-error" class="error-text" style="display:none"></span>
     </div>
 
     <div class="card">
-      <h2>Your Habits</h2>
+      <h2 data-i18n="habits_list_title">Your Habits</h2>
       <ul id="habits"></ul>
     </div>
 
-    <!-- Stats Sidebar -->
     <div class="card stats">
-      <h2>Habit Stats</h2>
-      <p>Total habits: <span id="stats-total">0</span></p>
-      <p>Best streak: <span id="stats-best">0</span> days</p>
-      <p>Average progress: <span id="stats-avg">0%</span></p>
+      <h2 data-i18n="stats_title">Habit Stats</h2>
+      <p data-i18n="stats_total">Total habits: <span id="stats-total">0</span></p>
+      <p data-i18n="stats_best">Best streak: <span id="stats-best">0</span> days</p>
+      <p data-i18n="stats_avg">Average progress: <span id="stats-avg">0%</span></p>
     </div>
 
-    <!-- Progress Chart -->
     <div class="card">
-      <h2>Progress Overview</h2>
+      <h2 data-i18n="overview_overall_progress">Progress Overview</h2>
       <canvas id="progressChart"></canvas>
     </div>
 
-    <!-- Tips Section -->
     <div class="card tips">
-      <h2>Tips</h2>
+      <h2 data-i18n="tips_title">Tips</h2>
       <ul>
-        <li>Start small, stay consistent.</li>
-        <li>Track daily, not weekly.</li>
-        <li>Celebrate small wins.</li>
+        <li data-i18n="tips_title">Start small, stay consistent.</li>
+        <li data-i18n="tips_title">Track daily, not weekly.</li>
+        <li data-i18n="tips_title">Celebrate small wins.</li>
       </ul>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <div id="toast" class="toast" aria-live="polite" aria-atomic="true" style="display:none">
+    <span id="toast-text">Deleted</span>
+    <button id="toast-undo" class="toast-action" data-i18n="btn_undo">Undo</button>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/app.js"></script>
 </body>

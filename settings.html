@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Sidebar -->
   <div class="sidebar">
     <a href="index.html">🏠 Home</a>
     <a href="habits.html">📋 Habits</a>
@@ -14,19 +13,14 @@
     <a href="settings.html">⚙️ Settings</a>
   </div>
 
-  <!-- Panel -->
   <div class="panel">
-    <!-- Settings container -->
     <div id="settings">
-      <!-- Theme preview -->
       <div class="card settings-section">
-        <h2>Theme</h2>
+        <h2 data-i18n="settings_theme">Theme</h2>
         <div class="theme-preview">
           <div class="preview-card">
             <div class="preview-header">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
             </div>
             <div class="preview-body">
               <div class="preview-sidebar"></div>
@@ -38,44 +32,52 @@
             </div>
           </div>
           <div class="theme-actions">
-            <button id="theme-toggle">🌗 Toggle theme</button>
+            <button id="theme-toggle" data-i18n="btn_toggle_theme">🌗 Toggle theme</button>
           </div>
         </div>
       </div>
 
-      <!-- Language -->
       <div class="card settings-section">
-        <h2>Language</h2>
-        <p class="dim">Current: <span id="lang-current">en</span></p>
-        <button id="lang-toggle">🔁 Switch language (en/fa)</button>
+        <h2 data-i18n="settings_language">Language</h2>
+        <p class="dim" data-i18n="settings_lang_current">Current: <span id="lang-current">en</span></p>
+        <button id="lang-toggle" data-i18n="settings_language">🔁 Switch language (en/fa)</button>
       </div>
 
-      <!-- Quick actions -->
       <div class="card settings-section">
-        <h2>Quick actions</h2>
+        <h2 data-i18n="quick_actions">Quick actions</h2>
         <div class="qa-grid">
-          <button id="clear-data" class="danger">🧹 Clear all data</button>
-          <button id="export-data">📦 Export data (JSON)</button>
+          <button id="clear-data" class="danger" data-i18n="clear_data">🧹 Clear all data</button>
+          <button id="export-data" data-i18n="export_data">📦 Export data (JSON)</button>
           <input type="file" id="import-file" accept="application/json" style="display:none">
-          <button id="import-data">📥 Import data</button>
+          <button id="import-data" data-i18n="import_data">📥 Import data</button>
         </div>
         <p class="dim small">Export your habits and tasks to a JSON file, or import from a backup.</p>
       </div>
 
-      <!-- About -->
-      <div class="card settings-section about">
-        <h2>About ooz</h2>
-        <p>ooz is a personal, beautiful, and practical habit & task tracker. Designed for focus, consistency, and delight.</p>
+      <div class="card settings-section">
+        <h2 data-i18n="shortcuts_title">Keyboard shortcuts</h2>
         <ul>
-          <li><strong>Design:</strong> Dark, purple-forward, responsive</li>
-          <li><strong>Data:</strong> Stored locally in your browser</li>
-          <li><strong>Goal:</strong> Help you build daily momentum</li>
+          <li><strong>H</strong>: Home, <strong>B</strong>: Habits, <strong>K</strong>: Tasks, <strong>S</strong>: Settings</li>
+          <li><strong>N</strong>: Add habit/task</li>
+          <li><strong>T</strong>: Filter today (Tasks)</li>
+          <li><strong>D</strong>: Toggle theme</li>
+          <li><strong>L</strong>: Switch language</li>
+          <li><strong>Esc</strong>: Clear selection in calendar</li>
         </ul>
+      </div>
+
+      <div class="card settings-section about">
+        <h2 data-i18n="about_title">About ooz</h2>
+        <p data-i18n="about_text">ooz is a personal, beautiful, and practical habit & task tracker.</p>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <div id="toast" class="toast" aria-live="polite" aria-atomic="true" style="display:none">
+    <span id="toast-text">Deleted</span>
+    <button id="toast-undo" class="toast-action" data-i18n="btn_undo">Undo</button>
+  </div>
+
   <script src="js/app.js"></script>
 </body>
 </html>

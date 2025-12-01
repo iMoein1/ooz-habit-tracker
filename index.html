@@ -6,42 +6,38 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Sidebar -->
   <div class="sidebar">
-    <a href="index.html">🏠 Home</a>
+    <a href="index.html" data-i18n="welcome_title">🏠 Home</a>
     <a href="habits.html">📋 Habits</a>
     <a href="tasks.html">🗓️ Tasks</a>
     <a href="settings.html">⚙️ Settings</a>
   </div>
 
-  <!-- Panel -->
   <div class="panel">
-    <!-- Welcome Card -->
     <div class="card welcome">
-      <h2>Welcome back, ooz 👋</h2>
-      <p>Today is <span id="today-date"></span>. Stay productive!</p>
+      <h2 data-i18n="welcome_title">Welcome back, ooz 👋</h2>
+      <p data-i18n="welcome_sub">Today is <span id="today-date"></span>. Stay productive!</p>
     </div>
 
-    <!-- Overview Card -->
     <div class="card overview" id="overview">
       <div class="overview-header">
-        <h2>Overview</h2>
-        <span class="badge">Today</span>
+        <h2 data-i18n="overview_overall_progress">Overview</h2>
+        <span class="badge" data-i18n="overview_overall_progress">Today</span>
       </div>
 
       <div class="overview-grid">
         <div class="overview-item">
-          <span class="label">Active habits</span>
+          <span class="label" data-i18n="overview_active_habits">Active habits</span>
           <span class="value" id="ov-habits">0</span>
         </div>
 
         <div class="overview-item">
-          <span class="label">Tasks today</span>
+          <span class="label" data-i18n="overview_tasks_today">Tasks today</span>
           <span class="value" id="ov-tasks-today">0</span>
         </div>
 
         <div class="overview-item">
-          <span class="label">Overall progress</span>
+          <span class="label" data-i18n="overview_overall_progress">Overall progress</span>
           <div class="progress">
             <div class="progress-bar" id="ov-progress" style="width: 0%"></div>
           </div>
@@ -50,31 +46,32 @@
       </div>
 
       <div class="overview-quote">
-        <p id="ov-quote">Small steps every day lead to big changes.</p>
+        <p id="ov-quote" data-i18n="quote_default">Small steps every day lead to big changes.</p>
       </div>
     </div>
 
-    <!-- Quick Actions -->
     <div class="card quick-actions">
-      <h2>Quick Actions</h2>
-      <button onclick="location.href='habits.html'">➕ Add Habit</button>
-      <button onclick="location.href='tasks.html'">➕ Add Task</button>
+      <h2 data-i18n="quick_actions">Quick Actions</h2>
+      <button onclick="location.href='habits.html'" data-i18n="btn_add_habit">➕ Add Habit</button>
+      <button onclick="location.href='tasks.html'" data-i18n="btn_add_task">➕ Add Task</button>
     </div>
 
-    <!-- Motivation Card -->
     <div class="card motivation">
-      <h2>Daily Motivation</h2>
-      <p id="motivation-text">Consistency beats intensity.</p>
+      <h2 data-i18n="motivation_default">Daily Motivation</h2>
+      <p id="motivation-text" data-i18n="motivation_default">Consistency beats intensity.</p>
     </div>
 
-    <!-- Upcoming Tasks -->
     <div class="card upcoming">
-      <h2>Upcoming Tasks</h2>
+      <h2 data-i18n="upcoming_title">Upcoming Tasks</h2>
       <ul id="upcoming-list"></ul>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <div id="toast" class="toast" aria-live="polite" aria-atomic="true" style="display:none">
+    <span id="toast-text">Deleted</span>
+    <button id="toast-undo" class="toast-action" data-i18n="btn_undo">Undo</button>
+  </div>
+
   <script src="js/app.js"></script>
 </body>
 </html>

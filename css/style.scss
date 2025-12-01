@@ -1,359 +1,233 @@
-// 🎨 رنگ‌ها و متغیرها
-$primary: #6A0DAD; // بنفش تیره
-$secondary: #00C9A7; // فیروزه‌ای
-$dark-bg: #121212;
-$dark-card: #1E1E2F;
-$light-bg: #f5f5f5;
-$light-card: #fff;
-$text-dark: #222;
-$text-light: #e0e0e0;
+// =============================
+// ooz Habit Tracker – full SCSS
+// Dark theme, purple-forward, compact UI, micro-animations
+// =============================
 
-// 🌐 فونت ساده و کاربرپسند
+// ---- Brand tokens
+$font-stack: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+$bg-dark: #0e0e16;
+$bg-panel: #141423;
+$dark-card: #1a1a2b;
+$text-light: #f0f3ff;
+$text-dim: rgba(240,243,255,0.75);
+
+$primary: #6A0DAD;  // purple
+$secondary: #00C9A7; // teal
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+
+$shadow-sm: 0 2px 8px rgba(0,0,0,0.25);
+$shadow-md: 0 6px 18px rgba(0,0,0,0.35);
+
+$space-1: 0.5rem;
+$space-2: 0.75rem;
+$space-3: 1rem;
+$space-4: 1.25rem;
+
+$anim-fast: 150ms;
+$anim-normal: 250ms;
+
+// =============================
+// Base
+// =============================
+* { box-sizing: border-box; }
+html, body { height: 100%; }
 body {
-  font-family: sans-serif;
-  background-color: $dark-bg;
-  color: $text-light;
   margin: 0;
-  transition: background 0.3s ease, color 0.3s ease;
-
-  &.light-theme {
-    background-color: $light-bg;
-    color: $text-dark;
-
-    .sidebar {
-      background: linear-gradient(135deg, #ddd, #eee);
-
-      a {
-        color: $text-dark;
-
-        &:hover {
-          background: $primary;
-          color: white;
-        }
-      }
-    }
-
-    .card {
-      background-color: $light-card;
-    }
-  }
+  font-family: $font-stack;
+  background: radial-gradient(1200px 700px at 10% -10%, rgba(106,13,173,0.08), transparent 60%),
+              radial-gradient(900px 600px at 100% 0%, rgba(0,201,167,0.08), transparent 60%),
+              $bg-dark;
+  color: $text-light;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-// 📌 Sidebar
+a { color: $text-light; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+// =============================
+// Layout: sidebar + panel
+// =============================
 .sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 220px;
-  height: 100vh;
-  background: linear-gradient(135deg, $primary, $secondary);
-  padding: 1.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  top: 0; left: 0;
+  width: 240px;
+  height: 100%;
+  background: linear-gradient(180deg, #12091f, #0f0f1b);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding: $space-3 $space-2;
+  display: flex; flex-direction: column; gap: $space-1;
 
   a {
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
+    display: block;
+    padding: $space-2 $space-2;
+    border-radius: $radius-sm;
+    color: $text-light;
+    opacity: 0.95;
+    transition: background $anim-fast ease, transform $anim-fast ease, box-shadow $anim-fast ease;
 
     &:hover {
-      background: rgba(255,255,255,0.2);
-      transform: translateX(5px);
+      background: rgba(255,255,255,0.12);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
   }
 }
 
-// 📌 Panel & Cards
 .panel {
   margin-left: 240px;
-  padding: 2rem;
+  min-height: 100%;
+  padding: $space-3;
+  background: $bg-panel;
 }
 
+// =============================
+// Cards
+// =============================
 .card {
-  background-color: $dark-card;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  transition: transform 0.2s ease;
+  background: $dark-card;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: $radius-md;
+  padding: $space-2;        // compact
+  margin-bottom: $space-2;  // compact
+  box-shadow: $shadow-sm;
+  transition: transform $anim-fast ease, box-shadow $anim-normal ease, border-color $anim-fast ease;
 
-  &:hover {
-    transform: translateY(-3px);
-  }
+  &:hover { transform: translateY(-2px); box-shadow: $shadow-md; }
 
   h2 {
-    color: $secondary;
-    margin-bottom: 1rem;
+    margin: 0 0 $space-1 0;
+    font-size: 1.05rem;
     font-weight: 700;
+    letter-spacing: 0.2px;
+    color: mix($secondary, #ffffff, 70%);
   }
+
+  p { margin: 0.25rem 0; }
+  ul { margin-top: $space-1; padding-left: 0; list-style: none; }
+  ul li { padding: $space-1; border-radius: $radius-sm; }
 }
 
-// 📌 Buttons & Inputs
+// Shared sections
+.stats p, .tasks-stats p { margin: 0.25rem 0; }
+
+// =============================
+// Buttons
+// =============================
 button {
-  background: linear-gradient(135deg, $primary, $secondary);
-  color: white;
+  appearance: none;
   border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
+  color: #fff;
+  background: linear-gradient(135deg, $primary, $secondary);
+  padding: 0.5rem 0.9rem;
+  border-radius: $radius-sm;
   cursor: pointer;
-  font-weight: 600;
-  font-family: sans-serif;
-  transition: 0.3s;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  transition: transform $anim-fast ease, opacity $anim-fast ease, box-shadow $anim-fast ease;
+  position: relative; overflow: hidden;
 
-  &:hover {
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
+  &:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+  &:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+
+  &.danger { background: #e03131; }
 }
 
+// Micro ripple (CSS-only)
+button::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  transform: scale(0); opacity: 0;
+  transition: transform 300ms ease, opacity 400ms ease;
+}
+button:active::after { background: rgba(255,255,255,0.18); transform: scale(1); opacity: 1; }
+
+// =============================
+// Inputs
+// =============================
 input {
-  background-color: #2c2c3c;
+  width: 100%;
+  background: #161628;
   color: $text-light;
-  border: 1px solid #555;
-  padding: 0.6rem;
-  border-radius: 6px;
-  font-family: sans-serif;
-}
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: $radius-sm;
+  padding: 0.5rem 0.75rem;
+  margin: 0.35rem 0;
+  transition: border-color $anim-fast ease, box-shadow $anim-fast ease, background $anim-fast ease;
 
-// 📌 Lists
-#habits li,
-#task-list li {
-  background: $dark-card;
-  margin: 0.5rem 0;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background 0.3s ease;
+  &::placeholder { color: $text-dim; }
 
-  &:hover {
-    background: rgba(255,255,255,0.05);
+  &:focus {
+    outline: none;
+    border-color: mix($primary, $secondary, 50%);
+    box-shadow: 0 0 0 3px rgba(106,13,173,0.25);
+    background-color: #1d1d32;
   }
 }
 
-// 📌 Overview card
+// Inline validation
+.input-error { border-color: #e03131 !important; }
+.error-text { color: #ff6b6b; font-size: 0.9rem; margin-top: 0.4rem; }
+
+// =============================
+// Overview
+// =============================
 .overview {
-  .overview-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .badge {
-      background: rgba(255, 255, 255, 0.12);
-      color: $text-light;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
+  .overview-header { display: flex; align-items: center; gap: $space-2; }
+  .badge {
+    display: inline-block; background: rgba(255,255,255,0.08);
+    padding: 0.25rem 0.6rem; border-radius: $radius-sm; font-weight: 700;
   }
-
   .overview-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: $space-2;
+  }
+  .overview-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: $radius-sm;
+    padding: $space-2;
+    transition: border-color $anim-fast ease, background $anim-fast ease;
 
-    .overview-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 1rem;
+    .label { opacity: 0.85; font-size: 0.95rem; }
+    .value { font-size: 1.4rem; font-weight: 800; }
+    .value.small { font-size: 0.95rem; font-weight: 700; opacity: 0.9; }
 
-      .label {
-        display: block;
-        font-size: 0.9rem;
-        opacity: 0.9;
-        margin-bottom: 0.25rem;
-      }
-
-      .value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: $secondary;
-
-        &.small {
-          font-size: 0.95rem;
-          color: $text-light;
-          margin-top: 0.4rem;
-          display: inline-block;
-        }
-      }
-
-      .progress {
-        width: 100%;
-        height: 10px;
-        background: #2a2a3a;
-        border-radius: 999px;
-        margin-top: 0.35rem;
-        overflow: hidden;
-
-        .progress-bar {
-          height: 100%;
-          background: linear-gradient(135deg, $primary, $secondary);
-          border-radius: 999px;
-          transition: width 0.6s ease;
-        }
-      }
+    .progress {
+      margin-top: 0.4rem; height: 10px; background: #2a2a3a; border-radius: 999px; overflow: hidden;
+      .progress-bar { height: 100%; background: linear-gradient(135deg, $primary, $secondary); transition: width 500ms ease; }
     }
   }
-
-  .overview-quote {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px dashed rgba(255, 255, 255, 0.12);
-
-    p {
-      margin: 0;
-      font-style: italic;
-      opacity: 0.95;
-    }
-  }
+  .overview-quote { margin-top: $space-2; opacity: 0.9; }
 }
 
-// 📌 کارت‌های Home
-.welcome, .quick-actions, .motivation, .upcoming {
-  background: $dark-card;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-
-  h2 {
-    margin-bottom: 0.75rem;
-    color: $secondary;
-  }
-
-  p {
-    font-size: 1rem;
-    opacity: 0.9;
-  }
-
-  button {
-    margin-right: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-
-    li {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      background: rgba(255,255,255,0.05);
-      border-radius: 8px;
-    }
-  }
-}
-
-// 📱 Responsive
-@media (max-width: 768px) {
-  .sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    justify-content: space-around;
-  }
-
-  .panel {
-    margin-left: 0;
-    padding: 1rem;
-  }
-
-  .card {
-    padding: 1rem;
-  }
-}
-
-@media (max-width: 900px) {
-  .overview .overview-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.stats {
-  background: $dark-card;
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-
-  p {
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    opacity: 0.9;
-  }
-}
-
-.tips {
-  ul {
-    list-style: none;
-    padding: 0;
-
-    li {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      background: rgba(255,255,255,0.05);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      opacity: 0.85;
-    }
-  }
-}
-// Tasks page: productivity meter
+// =============================
+// Productivity meter (Tasks)
+// =============================
 .productivity {
-  .meter {
-    width: 100%;
-    height: 12px;
-    background: #2a2a3a;
-    border-radius: 999px;
-    overflow: hidden;
-
-    .meter-bar {
-      height: 100%;
-      background: linear-gradient(135deg, $primary, $secondary);
-      transition: width 0.5s ease;
-    }
+  .meter { width: 100%; height: 12px; background: #2a2a3a; border-radius: 999px; overflow: hidden;
+    .meter-bar { height: 100%; background: linear-gradient(135deg, $primary, $secondary); transition: width 0.5s ease; }
   }
-
-  .meter-text {
-    margin-top: 0.5rem;
-    font-weight: 700;
-    color: $secondary;
-  }
+  .meter-text { margin-top: 0.5rem; font-weight: 700; color: $secondary; }
 }
 
-// Tasks page: mini calendar
+// =============================
+// Mini calendar (Tasks)
+// =============================
 .mini-calendar {
   .calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    h2 {
-      margin: 0;
-    }
-
-    button {
-      padding: 0.4rem 0.8rem;
-    }
+    display: flex; align-items: center; justify-content: space-between;
+    h2 { margin: 0; }
+    button { padding: 0.4rem 0.8rem; }
   }
 
   .calendar-grid {
     margin-top: 0.75rem;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    display: grid; grid-template-columns: repeat(7, 1fr);
     gap: 0.5rem;
   }
 
@@ -365,186 +239,299 @@ input {
     padding: 0.5rem 0.25rem;
     cursor: pointer;
     user-select: none;
-    transition: transform 0.1s ease, background 0.2s ease;
+    transition: transform $anim-fast ease, background $anim-normal ease, color $anim-fast ease;
 
-    &.muted { opacity: 0.45; }
-    &.today {
-      border-color: $secondary;
-      box-shadow: 0 0 0 2px rgba(0,201,167,0.25);
-    }
-    &.active {
-      background: linear-gradient(135deg, $primary, $secondary);
-      color: #fff;
-      font-weight: 700;
-    }
-
+    &.muted { opacity: 0.55; font-weight: 700; }
+    &.today { border-color: $secondary; box-shadow: 0 0 0 2px rgba(0,201,167,0.25); }
+    &.active { background: linear-gradient(135deg, $primary, $secondary); color: #fff; font-weight: 700; }
     &:hover { transform: translateY(-2px); }
   }
 
-  .calendar-tip {
-    margin-top: 0.5rem;
-    opacity: 0.8;
-    font-size: 0.9rem;
-  }
+  .calendar-tip { margin-top: 0.5rem; opacity: 0.85; font-size: 0.9rem; }
 }
 
-// Tasks page: list items with checkbox
+// =============================
+// Task list
+// =============================
+#task-list { list-style: none; padding: 0; margin: 0; }
 #task-list li {
-  gap: 0.75rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: $space-2; padding: $space-1 $space-2;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
 
-  .task-left {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+  .task-left { display: flex; align-items: center; gap: 0.6rem; }
+  input[type="checkbox"] { width: 18px; height: 18px; accent-color: $primary; }
+  .task-title { font-weight: 700; }
+  .task-date { opacity: 0.85; font-size: 0.92rem; margin-left: 0.5rem; }
 
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: $primary;
-    }
+  .task-actions { display: flex; gap: 0.5rem; }
 
-    .task-title {
-      font-weight: 600;
-    }
-
-    .task-date {
-      opacity: 0.8;
-      font-size: 0.9rem;
-      margin-left: 0.5rem;
-    }
-  }
-
-  .task-actions {
-    display: flex;
-    gap: 0.5rem;
-
-    .delete-btn {
-      background: #e03131;
-      &:hover { opacity: 0.9; }
-    }
-  }
-
-  &.done {
-    opacity: 0.7;
-    .task-title { text-decoration: line-through; }
-  }
+  &.done { opacity: 0.75; .task-title { text-decoration: line-through; } }
 }
 
-body.light-theme {
-  .mini-calendar .calendar-cell {
-    background: #f7f7f9;
-    border-color: #e6e6ef;
-  }
-}
+// =============================
+// Settings: theme preview and quick actions
+// =============================
+.settings-section .dim { opacity: 0.85; }
+.settings-section .small { font-size: 0.9rem; }
 
-// Settings sections
-.settings-section {
-  .dim { opacity: 0.8; }
-  .small { font-size: 0.9rem; }
-
-  &.about ul {
-    list-style: none;
-    padding: 0;
-    li {
-      margin: 0.3rem 0;
-      background: rgba(255,255,255,0.05);
-      padding: 0.6rem 0.8rem;
-      border-radius: 8px;
-    }
-  }
-}
-
-// Theme preview
 .theme-preview {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1rem;
-  align-items: center;
+  display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
 
   .preview-card {
     background: $dark-card;
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    overflow: hidden;
+    border-radius: 12px; overflow: hidden;
 
-    .preview-header {
-      display: flex;
-      gap: 6px;
-      padding: 8px 10px;
-      background: rgba(255,255,255,0.06);
-      .dot {
-        width: 10px; height: 10px; border-radius: 50%;
-        background: linear-gradient(135deg, $primary, $secondary);
-      }
+    .preview-header { display: flex; gap: 6px; padding: 8px 10px; background: rgba(255,255,255,0.06);
+      .dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, $primary, $secondary); }
     }
 
     .preview-body {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 0;
-      .preview-sidebar {
-        background: linear-gradient(135deg, $primary, $secondary);
-        height: 160px;
-      }
+      display: grid; grid-template-columns: 160px 1fr; gap: 0;
+      .preview-sidebar { background: linear-gradient(135deg, $primary, $secondary); height: 160px; }
       .preview-content {
-        padding: 10px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
 
         .preview-widget {
           background: rgba(255,255,255,0.06);
           border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 10px;
-          height: 60px;
+          border-radius: 10px; height: 60px;
         }
-        .preview-widget.wide {
-          grid-column: span 2;
-          height: 40px;
-        }
+        .preview-widget.wide { grid-column: span 2; height: 40px; }
       }
     }
   }
 
-  .theme-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  .theme-actions { display: flex; flex-direction: column; gap: 0.5rem; }
 }
 
-// Quick actions grid
 .qa-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 180px));
-  gap: 0.75rem;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 180px)); gap: $space-2;
+  .danger { background: #e03131; &:hover { opacity: 0.9; } }
+}
 
-  .danger {
-    background: #e03131;
-    &:hover { opacity: 0.9; }
+// =============================
+// Toast (Undo)
+// =============================
+.toast {
+  position: fixed;
+  left: 50%; bottom: 20px;
+  transform: translateX(-50%) translateY(6px);
+  background: $dark-card;
+  color: $text-light;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  display: flex; align-items: center; gap: 0.75rem;
+  z-index: 1000;
+  opacity: 0; pointer-events: none;
+  transition: opacity $anim-fast ease, transform $anim-fast ease;
+
+  &.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+
+  .toast-action {
+    background: linear-gradient(135deg, $primary, $secondary);
+    color: white; border: none;
+    padding: 0.35rem 0.75rem; border-radius: 6px; font-weight: 700; cursor: pointer;
   }
 }
 
-@media (max-width: 768px) {
-  .theme-preview {
-    grid-template-columns: 1fr;
-  }
-  .qa-grid {
-    grid-template-columns: 1fr;
-  }
+// =============================
+// Empty states
+// =============================
+.empty-state {
+  background: rgba(255,255,255,0.04);
+  border: 1px dashed rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  opacity: 0.9;
 }
 
+// =============================
+// Light theme adjustments
+// =============================
 body.light-theme {
-  .settings-section .about li {
-    background: #f7f7f9;
-    border: 1px solid #e6e6ef;
+  background: #f7f7fb;
+
+  .sidebar {
+    background: #ffffff;
+    border-right-color: #e6e6ef;
+    a { color: #222; &:hover { background: #f0f0f6; box-shadow: none; } }
   }
-  .theme-preview .preview-card {
-    background: #fff;
+
+  .panel { background: #ffffff; }
+
+  .card, .stats, .tips, .welcome, .quick-actions, .motivation, .upcoming {
+    background: #ffffff;
+    color: #222;
     border-color: #e6e6ef;
-    .preview-header { background: #f3f3f7; }
-    .preview-content .preview-widget {
-      background: #fafafc; border-color: #e6e6ef;
-    }
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+    h2 { color: #222; }
   }
+
+  .overview .overview-item {
+    border-color: #e9e9f2;
+    background: #fafafb;
+
+    .progress { background: #e8e8f2; }
+  }
+
+  input {
+    background: #fff; color: #222; border-color: #d7d7e5;
+    &:focus { box-shadow: 0 0 0 3px rgba(0,201,167,0.25); }
+  }
+
+  .mini-calendar .calendar-cell {
+    background: #f7f7f9; border-color: #e6e6ef;
+    &.active { color: #fff; }
+  }
+
+  .settings-section .about li {
+    background: #f7f7f9; border: 1px solid #e6e6ef;
+  }
+
+  #task-list li {
+    background: #fafafb; border-color: #e6e6ef;
+  }
+
+  .toast { background: #fff; color: #222; border-color: #e6e6ef; }
+}
+
+// =============================
+// RTL mode (Persian)
+// =============================
+body.rtl {
+  direction: rtl; text-align: right;
+
+  .sidebar { left: auto; right: 0; }
+  .panel { margin-left: 0; margin-right: 240px; }
+
+  .overview .overview-header { flex-direction: row-reverse; }
+  .overview .overview-grid { grid-template-columns: repeat(3, 1fr); }
+
+  #task-list li { flex-direction: row-reverse; }
+  #task-list .task-date { margin-left: 0; margin-right: 0.5rem; }
+  #task-list .task-actions { flex-direction: row-reverse; }
+
+  .mini-calendar .calendar-header { flex-direction: row-reverse; }
+}
+
+// =============================
+// Responsive
+// =============================
+@media (max-width: 1024px) {
+  .overview .overview-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { width: 200px; }
+  .panel { margin-left: 200px; padding: $space-2; }
+  .overview .overview-grid { grid-template-columns: 1fr; }
+  .theme-preview { grid-template-columns: 1fr; }
+  .qa-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .sidebar { position: static; width: 100%; height: auto; }
+  .panel { margin: 0; }
+}
+
+// ===== focus-visible for keyboard users
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 3px solid rgba(106,13,173,0.28);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+// ===== small helpers
+.u-center { text-align: center; }
+.u-muted { color: rgba(255,255,255,0.6); }
+.u-hidden { display: none !important; }
+.kicker { font-size: 0.85rem; opacity: 0.85; }
+
+// ===== compact mode (toggle by adding .compact on body)
+body.compact {
+  .card { padding: 0.5rem; margin-bottom: 0.5rem; }
+  .card h2 { font-size: 1rem; margin-bottom: 0.35rem; }
+  .sidebar { width: 200px; }
+  .panel { margin-left: 200px; padding: 0.75rem; }
+  #task-list li, #habits li { padding: 0.4rem 0.6rem; }
+  .overview .overview-item .value { font-size: 1.1rem; }
+  .mini-calendar .calendar-cell { padding: 0.35rem 0.2rem; }
+}
+
+// ===== chart canvas responsiveness
+canvas { max-width: 100% !important; height: auto !important; display: block; }
+
+// ===== scrollbar styling (modern browsers)
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12));
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+body.light-theme ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.12));
+}
+
+// ===== small-screen tweaks for touch targets
+@media (max-width: 420px) {
+  button { padding: 0.6rem 0.9rem; font-size: 0.95rem; }
+  .sidebar a { padding: 0.6rem 0.8rem; }
+  .calendar-grid { gap: 0.35rem; }
+}
+
+// ===== print styles (minimal)
+@media print {
+  body { background: #fff; color: #000; }
+  .sidebar, .toast, .mini-calendar, .settings-section, .qa-grid { display: none !important; }
+  .panel { margin: 0; padding: 0; }
+  .card { border: 1px solid #ddd; box-shadow: none; background: #fff; color: #000; }
+}
+
+// ===== form labels and helpers
+.form-row { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem; }
+.form-row.inline { flex-direction: row; align-items: center; gap: 0.5rem; }
+.label { font-weight: 700; font-size: 0.95rem; color: $text-dim; }
+
+// ===== subtle entrance animations for cards on load
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card { animation: fadeUp 320ms ease both; }
+
+// ===== accessible color alternatives (for low-vision)
+.high-contrast {
+  .card { background: #0f0f12; border-color: rgba(255,255,255,0.14); }
+  a, .dim { color: #fff; }
+  input { background: #0b0b0f; color: #fff; border-color: rgba(255,255,255,0.18); }
+}
+
+// ===== small helpers for alignment
+.row { display: flex; gap: 0.75rem; align-items: center; }
+.col { display: flex; flex-direction: column; gap: 0.5rem; }
+
+// ===== ensure toast accessible focus
+.toast:focus { outline: 3px solid rgba(0,201,167,0.22); }
+
+// ===== ensure chart container sizing
+.chart-wrap { width: 100%; max-width: 720px; margin: 0 auto; }
+
+// ===== utility for visually-hidden (screen readers)
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; border: 0; padding: 0; margin: -1px;
 }
