@@ -1,7 +1,7 @@
 // js/app.js
 // -----------------------------
 // پروژه ooz-habit-tracker
-// مدیریت عادت‌ها + Streak Counter + Dashboard
+// مدیریت عادت‌ها + Streak Counter + Dashboard + Notifications
 // -----------------------------
 
 let habits = JSON.parse(localStorage.getItem("habits")) || [];
@@ -87,6 +87,49 @@ function updateChart() {
 }
 
 // -----------------------------
+// بخش Notifications
+// -----------------------------
+function requestNotificationPermission() {
+  if ("Notification" in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        console.log("اجازه نوتیفیکیشن داده شد ✅");
+      } else {
+        console.log("اجازه نوتیفیکیشن داده نشد ❌");
+      }
+    });
+  }
+}
+
+function showNotification(habitName) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("یادآوری عادت", {
+      body: `وقتشه عادت "${habitName}" رو انجام بدی! ✅`,
+      icon: "assets/icons/reminder.png" // می‌تونی یک آیکون اضافه کنی
+    });
+  } else {
+    // اگر اجازه داده نشد → Toast ساده
+    const toast = document.createElement("div");
+    toast.textContent = `⏰ وقتشه "${habitName}" رو انجام بدی!`;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.right = "20px";
+    toast.style.background = "#4caf50";
+    toast.style.color = "white";
+    toast.style.padding = "10px";
+    toast.style.borderRadius = "5px";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  }
+}
+
+function remindFirstHabit() {
+  if (habits.length > 0) {
+    showNotification(habits[0].name);
+  }
+}
+
+// -----------------------------
 // افزودن عادت جدید
 // -----------------------------
 document.getElementById("add-btn").addEventListener("click", () => {
@@ -104,3 +147,7 @@ document.getElementById("add-btn").addEventListener("click", () => {
 // بارگذاری اولیه
 // -----------------------------
 renderHabits();
+requestNotificationPermission();
+
+// تست: هر 30 ثانیه یک یادآوری برای اولین عادت
+setInterval(remindFirstHabit, 30000);
