@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Habit Tracker Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <a href="#home">🏠 Home</a>
+    <a href="#habits">📋 Habits</a>
+    <a href="#tasks">🗓️ Tasks</a>
+    <a href="#settings">⚙️ Settings</a>
+  </nav>
+
+  <!-- Main Panel -->
+  <main class="panel">
+    <!-- Home Section -->
+    <section id="home" class="card">
+      <h2>Welcome to Habit Tracker</h2>
+      <p>Track your habits, manage tasks, and stay productive.</p>
+    </section>
+
+    <!-- Habits Section -->
+    <section id="habits" class="card">
+      <h2>Habits</h2>
+      <div id="add-habit">
+        <input type="text" id="habit-input" placeholder="New habit...">
+        <input type="number" id="goal-input" placeholder="Goal (days)">
+        <button id="add-btn">➕ Add</button>
+      </div>
+      <ul id="habits"></ul>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="card">
+      <h2>Progress Dashboard</h2>
+      <canvas id="progressChart"></canvas>
+    </section>
+
+    <!-- Tasks Section -->
+    <section id="tasks" class="card">
+      <h2>Planner</h2>
+      <input type="text" id="task-input" placeholder="New task...">
+      <input type="date" id="task-date">
+      <button id="add-task-btn">➕ Add Task</button>
+      <button id="filter-today-btn">📅 Show Today</button>
+      <ul id="task-list"></ul>
+    </section>
+
+    <!-- Settings Section -->
+    <section id="settings" class="card">
+      <h2>Settings</h2>
+      <p>Customize your experience here.</p>
+    </section>
+  </main>
+
+  <!-- JS -->
+  <script src="js/app.js"></script>
+</body>
+</html>

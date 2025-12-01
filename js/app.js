@@ -1,26 +1,22 @@
 // js/app.js
 // ----------------------------------------------
 // ooz-habit-tracker
-// HTML + SCSS + JS (Vanilla)
-// Features: Habit list, Streak Counter, Goals & Progress (%),
-// Dashboard chart (Chart.js), Notifications (browser/Toast)
+// Features: Habits, Streak Counter, Goals, Dashboard, Notifications, Planner with filter
 // ----------------------------------------------
 
 let habits = JSON.parse(localStorage.getItem("habits")) || [];
-let chart; // برای نمودار
-const STORAGE_KEY = "habits";
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let chart;
+const STORAGE_KEY_HABITS = "habits";
+const STORAGE_KEY_TASKS = "tasks";
 
-// ----------------------------------------------
-// ابزار ذخیره‌سازی
-// ----------------------------------------------
-function saveHabits() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-}
+// Save helpers
+function saveHabits() { localStorage.setItem(STORAGE_KEY_HABITS, JSON.stringify(habits)); }
+function saveTasks() { localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks)); }
 
-// ----------------------------------------------
-// افزودن عادت جدید (با هدف روزها)
-// نیاز به inputهای: #habit-input و #goal-input در HTML
-// ----------------------------------------------
+// -----------------------------
+// Habits
+// -----------------------------
 document.getElementById("add-btn").addEventListener("click", () => {
   const nameInput = document.getElementById("habit-input");
   const goalInput = document.getElementById("goal-input");
@@ -28,22 +24,12 @@ document.getElementById("add-btn").addEventListener("click", () => {
   const name = nameInput.value.trim();
   const goal = parseInt(goalInput.value, 10);
 
-  if (!name) {
-    alert("نام عادت را وارد کنید.");
-    return;
-  }
-  if (!goal || goal <= 0) {
-    alert("هدف (روز) باید یک عدد مثبت باشد.");
+  if (!name || !goal || goal <= 0) {
+    alert("Enter habit name and valid goal.");
     return;
   }
 
-  habits.push({
-    name,
-    goal,            // تعداد روز هدف (مثلاً 30)
-    streak: 0,       // روزهای متوالی انجام شده
-    lastDone: null   // آخرین تاریخی که انجام شده (toDateString)
-  });
-
+  habits.push({ name, goal, streak: 0, lastDone: null });
   saveHabits();
   renderHabits();
 
@@ -51,183 +37,140 @@ document.getElementById("add-btn").addEventListener("click", () => {
   goalInput.value = "";
 });
 
-// ----------------------------------------------
-// ثبت انجام شدن عادت در امروز و محاسبه streak
-// ----------------------------------------------
 function markDone(index) {
   const today = new Date().toDateString();
-
-  // اگر امروز قبلاً ثبت شده
   if (habits[index].lastDone === today) {
-    alert("این عادت امروز قبلاً ثبت شده ✅");
+    alert("Already marked today ✅");
     return;
   }
-
-  // دیروز را محاسبه کن
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toDateString();
-
-  // اگر آخرین انجام مربوط به دیروز بود → ادامه streak
-  if (habits[index].lastDone === yesterdayStr) {
+  if (habits[index].lastDone === yesterday.toDateString()) {
     habits[index].streak += 1;
   } else {
-    // اگر فاصله افتاده → شروع دوباره از 1
     habits[index].streak = 1;
   }
-
   habits[index].lastDone = today;
   saveHabits();
   renderHabits();
 }
 
-// ----------------------------------------------
-// رندر لیست عادت‌ها با نمایش درصد پیشرفت نسبت به هدف
-// ----------------------------------------------
 function renderHabits() {
   const list = document.getElementById("habits");
   list.innerHTML = "";
-
   habits.forEach((habit, index) => {
     const li = document.createElement("li");
-
-    // درصد پیشرفت: streak / goal
-    const progressPercent =
-      habit.goal && habit.goal > 0
-        ? Math.min(100, Math.round((habit.streak / habit.goal) * 100))
-        : 0;
-
-    // متن
-    const info = document.createElement("div");
-    info.style.display = "flex";
-    info.style.flexDirection = "column";
-    info.innerHTML = `
-      <strong>${habit.name}</strong>
-      <span>Streak: ${habit.streak}/${habit.goal} روز (${progressPercent}%)</span>
+    const progressPercent = Math.min(100, Math.round((habit.streak / habit.goal) * 100));
+    li.innerHTML = `
+      <div>
+        <strong>${habit.name}</strong>
+        <span>Streak: ${habit.streak}/${habit.goal} days (${progressPercent}%)</span>
+        <div style="background:#333;border-radius:6px;margin-top:6px;">
+          <div style="height:8px;width:${progressPercent}%;background:#9c27b0;border-radius:6px;"></div>
+        </div>
+      </div>
     `;
-
-    // دکمه انجام شد
     const btn = document.createElement("button");
-    btn.textContent = "✅ انجام شد";
+    btn.textContent = "✅ Done";
     btn.addEventListener("click", () => markDone(index));
-
-    // نوار پیشرفت ساده
-    const barWrap = document.createElement("div");
-    barWrap.style.width = "100%";
-    barWrap.style.background = "#eee";
-    barWrap.style.borderRadius = "6px";
-    barWrap.style.marginTop = "6px";
-
-    const bar = document.createElement("div");
-    bar.style.height = "8px";
-    bar.style.width = `${progressPercent}%`;
-    bar.style.background = "#4caf50";
-    bar.style.borderRadius = "6px";
-    barWrap.appendChild(bar);
-    info.appendChild(barWrap);
-
-    li.style.display = "flex";
-    li.style.alignItems = "center";
-    li.style.justifyContent = "space-between";
-    li.appendChild(info);
     li.appendChild(btn);
-
     list.appendChild(li);
   });
-
   updateChart();
 }
 
-// ----------------------------------------------
-// آپدیت نمودار پیشرفت (درصد) با Chart.js
-// ----------------------------------------------
 function updateChart() {
-  const canvas = document.getElementById("progressChart");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-
+  const ctx = document.getElementById("progressChart").getContext("2d");
   const labels = habits.map(h => h.name);
-  const data = habits.map(h => {
-    if (!h.goal || h.goal <= 0) return 0;
-    return Math.min(100, Math.round((h.streak / h.goal) * 100));
-  });
-
+  const data = habits.map(h => Math.min(100, Math.round((h.streak / h.goal) * 100)));
   if (chart) chart.destroy();
-
   chart = new Chart(ctx, {
     type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "پیشرفت (%)",
-          data,
-          backgroundColor: "#4caf50"
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, max: 100, ticks: { stepSize: 20 } }
-      }
-    }
+    data: { labels, datasets: [{ label: "Progress (%)", data, backgroundColor: "#9c27b0" }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
   });
 }
 
-// ----------------------------------------------
-// Notifications: اجازه و نمایش (Browser/Toast)
-// ----------------------------------------------
+// -----------------------------
+// Notifications
+// -----------------------------
 function requestNotificationPermission() {
   if (!("Notification" in window)) return;
-
   Notification.requestPermission().then(permission => {
-    if (permission === "granted") {
-      console.log("اجازه نوتیفیکیشن داده شد ✅");
-    } else {
-      console.log("اجازه نوتیفیکیشن داده نشد ❌");
-    }
+    console.log("Notification permission:", permission);
   });
 }
 
 function showNotification(habitName) {
-  // اگر مرورگر پشتیبانی و اجازه داده شده
   if ("Notification" in window && Notification.permission === "granted") {
-    new Notification("یادآوری عادت", {
-      body: `وقتشه عادت "${habitName}" رو انجام بدی! ✅`
-    });
+    new Notification("Habit Reminder", { body: `Time to do "${habitName}" ✅` });
     return;
   }
-
-  // Toast ساده در صفحه
   const toast = document.createElement("div");
-  toast.textContent = `⏰ وقتشه "${habitName}" رو انجام بدی!`;
+  toast.textContent = `⏰ Time to do "${habitName}"`;
   toast.style.position = "fixed";
   toast.style.bottom = "20px";
   toast.style.right = "20px";
-  toast.style.background = "#4caf50";
+  toast.style.background = "#9c27b0";
   toast.style.color = "white";
   toast.style.padding = "10px 12px";
-  toast.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
   toast.style.borderRadius = "6px";
   toast.style.zIndex = "9999";
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
 }
 
-// نمونه ساده: یادآوری برای اولین عادت هر 30 ثانیه (برای تست)
 function remindFirstHabit() {
-  if (habits.length > 0) {
-    showNotification(habits[0].name);
-  }
+  if (habits.length > 0) showNotification(habits[0].name);
 }
 
-// ----------------------------------------------
-// بارگذاری اولیه
-// ----------------------------------------------
-renderHabits();
-requestNotificationPermission();
+// -----------------------------
+// Planner (Tasks)
+// -----------------------------
+document.getElementById("add-task-btn").addEventListener("click", () => {
+  const nameInput = document.getElementById("task-input");
+  const dateInput = document.getElementById("task-date");
+  const name = nameInput.value.trim();
+  const date = dateInput.value;
+  if (!name || !date) {
+    alert("Enter task name and date.");
+    return;
+  }
+  tasks.push({ name, date });
+  saveTasks();
+  renderTasks();
+  nameInput.value = "";
+  dateInput.value = "";
+});
 
-// تست یادآوری (هر 30 ثانیه)
+function renderTasks(filterToday = false) {
+  const list = document.getElementById("task-list");
+  list.innerHTML = "";
+  const todayStr = new Date().toISOString().split("T")[0];
+  tasks.forEach((task, index) => {
+    if (filterToday && task.date !== todayStr) return;
+    const li = document.createElement("li");
+    li.textContent = `${task.date} - ${task.name}`;
+    const btn = document.createElement("button");
+    btn.textContent = "❌ Delete";
+    btn.addEventListener("click", () => {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks(filterToday);
+    });
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+}
+
+document.getElementById("filter-today-btn").addEventListener("click", () => {
+  renderTasks(true);
+});
+
+// -----------------------------
+// Init
+// -----------------------------
+renderHabits();
+renderTasks();
+requestNotificationPermission();
 setInterval(remindFirstHabit, 30000);
