@@ -41,4 +41,21 @@ header {
   margin: 0.5rem 0;
   padding: 0.5rem;
   border-radius: 5px;
+}
+
+#habit-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#habit-list li button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#habit-list li button:hover {
+  background: #45a049;
 }/*# sourceMappingURL=style.css.map */
