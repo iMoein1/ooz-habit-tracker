@@ -2,28 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tasks - Habit Tracker</title>
+  <title>ooz Habit Tracker - Tasks</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <nav class="sidebar">
+  <!-- Sidebar -->
+  <div class="sidebar">
     <a href="index.html">🏠 Home</a>
     <a href="habits.html">📋 Habits</a>
     <a href="tasks.html">🗓️ Tasks</a>
     <a href="settings.html">⚙️ Settings</a>
-  </nav>
+  </div>
 
-  <main class="panel">
-    <section id="tasks" class="card">
-      <h2>Planner</h2>
-      <input type="text" id="task-input" placeholder="New task...">
-      <input type="date" id="task-date">
+  <!-- Panel -->
+  <div class="panel">
+    <!-- Quick add -->
+    <div class="card">
+      <h2>Add new task</h2>
+      <input id="task-input" placeholder="Task name">
+      <input id="task-date" type="date">
       <button id="add-task-btn">➕ Add Task</button>
-      <button id="filter-today-btn">📅 Show Today</button>
-      <ul id="task-list"></ul>
-    </section>
-  </main>
+      <button id="filter-today-btn">📅 Show today</button>
+    </div>
 
+    <!-- Productivity meter -->
+    <div class="card productivity">
+      <h2>Today's productivity</h2>
+      <div class="meter">
+        <div class="meter-bar" id="prod-bar" style="width: 0%"></div>
+      </div>
+      <p class="meter-text"><span id="prod-text">0%</span> done today</p>
+    </div>
+
+    <!-- Mini calendar -->
+    <div class="card mini-calendar">
+      <div class="calendar-header">
+        <button id="cal-prev">←</button>
+        <h2 id="cal-label">Month</h2>
+        <button id="cal-next">→</button>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+      <p class="calendar-tip">Click a date to filter tasks</p>
+    </div>
+
+    <!-- Task stats -->
+    <div class="card stats tasks-stats">
+      <h2>Task stats</h2>
+      <p>Total tasks: <span id="tasks-total">0</span></p>
+      <p>Done tasks: <span id="tasks-done">0</span></p>
+      <p>Upcoming (next 7 days): <span id="tasks-upcoming">0</span></p>
+    </div>
+
+    <!-- Task list -->
+    <div class="card">
+      <h2>Your tasks</h2>
+      <ul id="task-list"></ul>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="js/app.js"></script>
 </body>
 </html>

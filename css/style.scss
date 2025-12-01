@@ -283,3 +283,268 @@ input {
     grid-template-columns: 1fr;
   }
 }
+.stats {
+  background: $dark-card;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+}
+
+.tips {
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+  }
+}
+// Tasks page: productivity meter
+.productivity {
+  .meter {
+    width: 100%;
+    height: 12px;
+    background: #2a2a3a;
+    border-radius: 999px;
+    overflow: hidden;
+
+    .meter-bar {
+      height: 100%;
+      background: linear-gradient(135deg, $primary, $secondary);
+      transition: width 0.5s ease;
+    }
+  }
+
+  .meter-text {
+    margin-top: 0.5rem;
+    font-weight: 700;
+    color: $secondary;
+  }
+}
+
+// Tasks page: mini calendar
+.mini-calendar {
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h2 {
+      margin: 0;
+    }
+
+    button {
+      padding: 0.4rem 0.8rem;
+    }
+  }
+
+  .calendar-grid {
+    margin-top: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+
+  .calendar-cell {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s ease, background 0.2s ease;
+
+    &.muted { opacity: 0.45; }
+    &.today {
+      border-color: $secondary;
+      box-shadow: 0 0 0 2px rgba(0,201,167,0.25);
+    }
+    &.active {
+      background: linear-gradient(135deg, $primary, $secondary);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    &:hover { transform: translateY(-2px); }
+  }
+
+  .calendar-tip {
+    margin-top: 0.5rem;
+    opacity: 0.8;
+    font-size: 0.9rem;
+  }
+}
+
+// Tasks page: list items with checkbox
+#task-list li {
+  gap: 0.75rem;
+
+  .task-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: $primary;
+    }
+
+    .task-title {
+      font-weight: 600;
+    }
+
+    .task-date {
+      opacity: 0.8;
+      font-size: 0.9rem;
+      margin-left: 0.5rem;
+    }
+  }
+
+  .task-actions {
+    display: flex;
+    gap: 0.5rem;
+
+    .delete-btn {
+      background: #e03131;
+      &:hover { opacity: 0.9; }
+    }
+  }
+
+  &.done {
+    opacity: 0.7;
+    .task-title { text-decoration: line-through; }
+  }
+}
+
+body.light-theme {
+  .mini-calendar .calendar-cell {
+    background: #f7f7f9;
+    border-color: #e6e6ef;
+  }
+}
+
+// Settings sections
+.settings-section {
+  .dim { opacity: 0.8; }
+  .small { font-size: 0.9rem; }
+
+  &.about ul {
+    list-style: none;
+    padding: 0;
+    li {
+      margin: 0.3rem 0;
+      background: rgba(255,255,255,0.05);
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+    }
+  }
+}
+
+// Theme preview
+.theme-preview {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+
+  .preview-card {
+    background: $dark-card;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+
+    .preview-header {
+      display: flex;
+      gap: 6px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.06);
+      .dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: linear-gradient(135deg, $primary, $secondary);
+      }
+    }
+
+    .preview-body {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 0;
+      .preview-sidebar {
+        background: linear-gradient(135deg, $primary, $secondary);
+        height: 160px;
+      }
+      .preview-content {
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+
+        .preview-widget {
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 10px;
+          height: 60px;
+        }
+        .preview-widget.wide {
+          grid-column: span 2;
+          height: 40px;
+        }
+      }
+    }
+  }
+
+  .theme-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+// Quick actions grid
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 180px));
+  gap: 0.75rem;
+
+  .danger {
+    background: #e03131;
+    &:hover { opacity: 0.9; }
+  }
+}
+
+@media (max-width: 768px) {
+  .theme-preview {
+    grid-template-columns: 1fr;
+  }
+  .qa-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.light-theme {
+  .settings-section .about li {
+    background: #f7f7f9;
+    border: 1px solid #e6e6ef;
+  }
+  .theme-preview .preview-card {
+    background: #fff;
+    border-color: #e6e6ef;
+    .preview-header { background: #f3f3f7; }
+    .preview-content .preview-widget {
+      background: #fafafc; border-color: #e6e6ef;
+    }
+  }
+}

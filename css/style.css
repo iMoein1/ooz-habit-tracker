@@ -234,4 +234,247 @@ input {
   .overview .overview-grid {
     grid-template-columns: 1fr;
   }
+}
+.stats {
+  background: #1E1E2F;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stats p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.tips ul {
+  list-style: none;
+  padding: 0;
+}
+.tips ul li {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.productivity .meter {
+  width: 100%;
+  height: 12px;
+  background: #2a2a3a;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.productivity .meter .meter-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #6A0DAD, #00C9A7);
+  transition: width 0.5s ease;
+}
+.productivity .meter-text {
+  margin-top: 0.5rem;
+  font-weight: 700;
+  color: #00C9A7;
+}
+
+.mini-calendar .calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mini-calendar .calendar-header h2 {
+  margin: 0;
+}
+.mini-calendar .calendar-header button {
+  padding: 0.4rem 0.8rem;
+}
+.mini-calendar .calendar-grid {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+.mini-calendar .calendar-cell {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  text-align: center;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+.mini-calendar .calendar-cell.muted {
+  opacity: 0.45;
+}
+.mini-calendar .calendar-cell.today {
+  border-color: #00C9A7;
+  box-shadow: 0 0 0 2px rgba(0, 201, 167, 0.25);
+}
+.mini-calendar .calendar-cell.active {
+  background: linear-gradient(135deg, #6A0DAD, #00C9A7);
+  color: #fff;
+  font-weight: 700;
+}
+.mini-calendar .calendar-cell:hover {
+  transform: translateY(-2px);
+}
+.mini-calendar .calendar-tip {
+  margin-top: 0.5rem;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+#task-list li {
+  gap: 0.75rem;
+}
+#task-list li .task-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+#task-list li .task-left input[type=checkbox] {
+  width: 18px;
+  height: 18px;
+  accent-color: #6A0DAD;
+}
+#task-list li .task-left .task-title {
+  font-weight: 600;
+}
+#task-list li .task-left .task-date {
+  opacity: 0.8;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+#task-list li .task-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+#task-list li .task-actions .delete-btn {
+  background: #e03131;
+}
+#task-list li .task-actions .delete-btn:hover {
+  opacity: 0.9;
+}
+#task-list li.done {
+  opacity: 0.7;
+}
+#task-list li.done .task-title {
+  text-decoration: line-through;
+}
+
+body.light-theme .mini-calendar .calendar-cell {
+  background: #f7f7f9;
+  border-color: #e6e6ef;
+}
+
+.settings-section .dim {
+  opacity: 0.8;
+}
+.settings-section .small {
+  font-size: 0.9rem;
+}
+.settings-section.about ul {
+  list-style: none;
+  padding: 0;
+}
+.settings-section.about ul li {
+  margin: 0.3rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+}
+
+.theme-preview {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+.theme-preview .preview-card {
+  background: #1E1E2F;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.theme-preview .preview-card .preview-header {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.theme-preview .preview-card .preview-header .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6A0DAD, #00C9A7);
+}
+.theme-preview .preview-card .preview-body {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0;
+}
+.theme-preview .preview-card .preview-body .preview-sidebar {
+  background: linear-gradient(135deg, #6A0DAD, #00C9A7);
+  height: 160px;
+}
+.theme-preview .preview-card .preview-body .preview-content {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.theme-preview .preview-card .preview-body .preview-content .preview-widget {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  height: 60px;
+}
+.theme-preview .preview-card .preview-body .preview-content .preview-widget.wide {
+  grid-column: span 2;
+  height: 40px;
+}
+.theme-preview .theme-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 180px));
+  gap: 0.75rem;
+}
+.qa-grid .danger {
+  background: #e03131;
+}
+.qa-grid .danger:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .theme-preview {
+    grid-template-columns: 1fr;
+  }
+  .qa-grid {
+    grid-template-columns: 1fr;
+  }
+}
+body.light-theme .settings-section .about li {
+  background: #f7f7f9;
+  border: 1px solid #e6e6ef;
+}
+body.light-theme .theme-preview .preview-card {
+  background: #fff;
+  border-color: #e6e6ef;
+}
+body.light-theme .theme-preview .preview-card .preview-header {
+  background: #f3f3f7;
+}
+body.light-theme .theme-preview .preview-card .preview-content .preview-widget {
+  background: #fafafc;
+  border-color: #e6e6ef;
 }/*# sourceMappingURL=style.css.map */
