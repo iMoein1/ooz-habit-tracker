@@ -43,7 +43,7 @@ Since **ooz** is a static web application, you don't need `npm` or `build` steps
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/yourusername/ooz-tracker.git](https://github.com/yourusername/ooz-tracker.git)
+    git clone (https://github.com/iMoein1/ooz-habit-tracker.git)
     ```
 2.  **Open the project:**
     Navigate to the folder and open `index.html` in your browser.
