@@ -4,25 +4,30 @@
   <meta charset="UTF-8">
   <title>ooz Habit Tracker - Home</title>
   <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <!-- Sidebar -->
   <div class="sidebar">
-    <a href="index.html" data-i18n="welcome_title">🏠 Home</a>
+    <a href="index.html">🏠 Home</a>
     <a href="habits.html">📋 Habits</a>
     <a href="tasks.html">🗓️ Tasks</a>
     <a href="settings.html">⚙️ Settings</a>
   </div>
 
+  <!-- Main panel -->
   <div class="panel">
+    <!-- Welcome -->
     <div class="card welcome">
-      <h2 data-i18n="welcome_title">Welcome back, ooz 👋</h2>
+      <h2 id="welcome-user" data-i18n="welcome_title">Welcome back, ooz 👋</h2>
       <p data-i18n="welcome_sub">Today is <span id="today-date"></span>. Stay productive!</p>
     </div>
 
+    <!-- Overview -->
     <div class="card overview" id="overview">
       <div class="overview-header">
         <h2 data-i18n="overview_overall_progress">Overview</h2>
-        <span class="badge" data-i18n="overview_overall_progress">Today</span>
+        <span class="badge">Today</span>
       </div>
 
       <div class="overview-grid">
@@ -30,12 +35,10 @@
           <span class="label" data-i18n="overview_active_habits">Active habits</span>
           <span class="value" id="ov-habits">0</span>
         </div>
-
         <div class="overview-item">
           <span class="label" data-i18n="overview_tasks_today">Tasks today</span>
           <span class="value" id="ov-tasks-today">0</span>
         </div>
-
         <div class="overview-item">
           <span class="label" data-i18n="overview_overall_progress">Overall progress</span>
           <div class="progress">
@@ -50,28 +53,36 @@
       </div>
     </div>
 
+    <!-- Quick actions -->
     <div class="card quick-actions">
-      <h2 data-i18n="quick_actions">Quick Actions</h2>
-      <button onclick="location.href='habits.html'" data-i18n="btn_add_habit">➕ Add Habit</button>
-      <button onclick="location.href='tasks.html'" data-i18n="btn_add_task">➕ Add Task</button>
+      <h2 data-i18n="quick_actions">Quick actions</h2>
+      <div class="row">
+        <button onclick="location.href='habits.html'" data-i18n="btn_add_habit">➕ Add Habit</button>
+        <button onclick="location.href='tasks.html'" data-i18n="btn_add_task" style="margin-left:0.5rem">➕ Add Task</button>
+      </div>
     </div>
 
+    <!-- Motivation -->
     <div class="card motivation">
-      <h2 data-i18n="motivation_default">Daily Motivation</h2>
+      <h2>Daily Motivation</h2>
       <p id="motivation-text" data-i18n="motivation_default">Consistency beats intensity.</p>
     </div>
 
+    <!-- Upcoming (optional: populate via app.js if you want) -->
     <div class="card upcoming">
       <h2 data-i18n="upcoming_title">Upcoming Tasks</h2>
       <ul id="upcoming-list"></ul>
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast" class="toast" aria-live="polite" aria-atomic="true" style="display:none">
     <span id="toast-text">Deleted</span>
     <button id="toast-undo" class="toast-action" data-i18n="btn_undo">Undo</button>
   </div>
 
+  <!-- Scripts: auth first, then app -->
+  <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <title>ooz Habit Tracker - Settings</title>
   <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <!-- Sidebar -->
   <div class="sidebar">
     <a href="index.html">🏠 Home</a>
     <a href="habits.html">📋 Habits</a>
@@ -13,8 +15,10 @@
     <a href="settings.html">⚙️ Settings</a>
   </div>
 
+  <!-- Panel -->
   <div class="panel">
     <div id="settings">
+      <!-- Theme -->
       <div class="card settings-section">
         <h2 data-i18n="settings_theme">Theme</h2>
         <div class="theme-preview">
@@ -37,12 +41,23 @@
         </div>
       </div>
 
+      <!-- Language -->
       <div class="card settings-section">
         <h2 data-i18n="settings_language">Language</h2>
         <p class="dim" data-i18n="settings_lang_current">Current: <span id="lang-current">en</span></p>
-        <button id="lang-toggle" data-i18n="settings_language">🔁 Switch language (en/fa)</button>
+        <button id="lang-toggle">🔁 Switch language (en/fa)</button>
       </div>
 
+      <!-- Profile & Logout -->
+      <div class="card settings-section">
+        <h2>Profile</h2>
+        <p id="profile-name" class="dim">Signed in as —</p>
+        <div class="row">
+          <button id="logout-btn" onclick="oozLogout()">Log out</button>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
       <div class="card settings-section">
         <h2 data-i18n="quick_actions">Quick actions</h2>
         <div class="qa-grid">
@@ -54,6 +69,7 @@
         <p class="dim small">Export your habits and tasks to a JSON file, or import from a backup.</p>
       </div>
 
+      <!-- Shortcuts -->
       <div class="card settings-section">
         <h2 data-i18n="shortcuts_title">Keyboard shortcuts</h2>
         <ul>
@@ -66,6 +82,7 @@
         </ul>
       </div>
 
+      <!-- About -->
       <div class="card settings-section about">
         <h2 data-i18n="about_title">About ooz</h2>
         <p data-i18n="about_text">ooz is a personal, beautiful, and practical habit & task tracker.</p>
@@ -73,11 +90,21 @@
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast" class="toast" aria-live="polite" aria-atomic="true" style="display:none">
     <span id="toast-text">Deleted</span>
     <button id="toast-undo" class="toast-action" data-i18n="btn_undo">Undo</button>
   </div>
 
+  <!-- Scripts -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const u = window.OOZAuth?.getCurrentUser?.();
+      const el = document.getElementById("profile-name");
+      if (u && el) el.textContent = `Signed in as ${u.username} (${u.email})`;
+    });
+  </script>
+  <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

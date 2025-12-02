@@ -1,24 +1,58 @@
 // =============================
-// app.js — کامل با i18n (en/fa), RTL, toast, shortcuts, pages init
-// جایگزین کامل فایل js/app.js کن
+// ooz Habit Tracker — app.js (full, integrated)
 // =============================
 
-// =============================
-// TRANSLATIONS (انگلیسی و فارسی)
-// =============================
+// --- Per-user storage helpers (via auth.js) ---
+const getUserId = () => (window.OOZAuth?.getCurrentUserId?.() || null);
+
+function getHabits() {
+  const uid = getUserId();
+  if (!uid) return JSON.parse(localStorage.getItem("habits")) || [];
+  return window.OOZUserStore.get(uid, "habits", []);
+}
+function setHabits(v) {
+  const uid = getUserId();
+  if (!uid) { localStorage.setItem("habits", JSON.stringify(v)); return; }
+  window.OOZUserStore.set(uid, "habits", v);
+}
+function getTasks() {
+  const uid = getUserId();
+  if (!uid) return JSON.parse(localStorage.getItem("tasks")) || [];
+  return window.OOZUserStore.get(uid, "tasks", []);
+}
+function setTasks(v) {
+  const uid = getUserId();
+  if (!uid) { localStorage.setItem("tasks", JSON.stringify(v)); return; }
+  window.OOZUserStore.set(uid, "tasks", v);
+}
+
+// --- Globals ---
+let habits = getHabits();
+let tasks = getTasks();
+let habitChart = null;
+let trashBuffer = [];
+
+// --- i18n translations (extend as needed) ---
 const TRANSLATIONS = {
   en: {
     // Home
     welcome_title: "Welcome back, ooz 👋",
     welcome_sub: "Today is {date}. Stay productive!",
-    btn_add_habit: "➕ Add Habit",
-    btn_add_task: "➕ Add Task",
     overview_active_habits: "Active habits",
     overview_tasks_today: "Tasks today",
     overview_overall_progress: "Overall progress",
     quote_default: "Small steps every day lead to big changes.",
     motivation_default: "Consistency beats intensity.",
     upcoming_title: "Upcoming Tasks",
+
+    // Buttons & generic
+    btn_add_habit: "➕ Add Habit",
+    btn_add_task: "➕ Add Task",
+    btn_done: "Done",
+    btn_delete: "Delete",
+    btn_undo: "Undo",
+    toast_deleted: "Task deleted — Undo",
+    placeholder_search: "Search...",
 
     // Habits
     habits_title: "Add New Habit",
@@ -46,7 +80,6 @@ const TRANSLATIONS = {
     tasks_upcoming: "Upcoming (next 7 days)",
     tasks_list_title: "Your tasks",
     empty_tasks: "No tasks yet — add one to get started!",
-    toast_deleted: "Task deleted — Undo",
 
     // Settings
     settings_theme: "Theme",
@@ -60,26 +93,27 @@ const TRANSLATIONS = {
     shortcuts_title: "Keyboard shortcuts",
     about_title: "About ooz",
     about_text: "ooz is a personal, beautiful, and practical habit & task tracker. Designed for focus, consistency, and delight.",
-
-    // Generic
-    btn_undo: "Undo",
-    btn_delete: "Delete",
-    btn_done: "Done",
-    placeholder_search: "Search...",
   },
 
   fa: {
     // Home
     welcome_title: "خوش برگشتی، ooz 👋",
     welcome_sub: "امروز {date} است. به مسیرت ادامه بده!",
-    btn_add_habit: "➕ افزودن عادت",
-    btn_add_task: "➕ افزودن وظیفه",
     overview_active_habits: "عادت‌های فعال",
     overview_tasks_today: "وظایف امروز",
     overview_overall_progress: "پیشرفت کلی",
     quote_default: "قدم‌های کوچک روزانه، تغییرات بزرگ می‌سازند.",
     motivation_default: "پیوستگی از شدت بهتر است.",
     upcoming_title: "وظایف آینده",
+
+    // Buttons & generic
+    btn_add_habit: "➕ افزودن عادت",
+    btn_add_task: "➕ افزودن وظیفه",
+    btn_done: "انجام شد",
+    btn_delete: "حذف",
+    btn_undo: "بازگردانی",
+    toast_deleted: "وظیفه حذف شد — بازگردانی",
+    placeholder_search: "جستجو...",
 
     // Habits
     habits_title: "افزودن عادت جدید",
@@ -107,7 +141,6 @@ const TRANSLATIONS = {
     tasks_upcoming: "آینده (۷ روز آینده)",
     tasks_list_title: "وظایف شما",
     empty_tasks: "هنوز وظیفه‌ای نداری — یکی اضافه کن تا شروع کنیم!",
-    toast_deleted: "وظیفه حذف شد — بازگردانی",
 
     // Settings
     settings_theme: "قالب",
@@ -121,159 +154,84 @@ const TRANSLATIONS = {
     shortcuts_title: "میانبرهای صفحه‌کلید",
     about_title: "دربارهٔ ooz",
     about_text: "ooz یک برنامهٔ ساده و زیبا برای پیگیری عادت‌ها و وظایف است. طراحی‌شده برای تمرکز، پیوستگی و لذت.",
-
-    // Generic
-    btn_undo: "بازگردانی",
-    btn_delete: "حذف",
-    btn_done: "انجام شد",
-    placeholder_search: "جستجو...",
   }
 };
 
-// =============================
-// Helpers for i18n
-// =============================
+// --- i18n helpers ---
 function toPersianDigits(str) {
   const map = { '0':'۰','1':'۱','2':'۲','3':'۳','4':'۴','5':'۵','6':'۶','7':'۷','8':'۸','9':'۹' };
   return String(str).replace(/\d/g, d => map[d] ?? d);
 }
-
 function localizedDateString(lang, d = new Date()) {
   try {
-    if (lang === "fa") {
-      return new Date(d).toLocaleDateString("fa-IR");
-    } else {
-      return new Date(d).toLocaleDateString("en-US");
-    }
-  } catch (err) {
-    return new Date(d).toDateString();
-  }
+    return new Date(d).toLocaleDateString(lang === "fa" ? "fa-IR" : "en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  } catch { return new Date(d).toDateString(); }
 }
-
 function applyTranslations() {
   const lang = document.documentElement.lang || "en";
   const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
-  // 1) Elements with data-i18n -> textContent
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
-    if (!key) return;
     let text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
-    if (text.includes("{date}")) {
-      text = text.replace("{date}", localizedDateString(lang, new Date()));
-    }
+    if (text.includes("{date}")) text = text.replace("{date}", localizedDateString(lang));
     el.textContent = text;
   });
-
-  // 2) Placeholders
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     const key = el.getAttribute("data-i18n-placeholder");
-    if (!key) return;
     const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
     el.setAttribute("placeholder", text);
   });
 
-  // 3) title attributes
-  document.querySelectorAll("[data-i18n-title]").forEach(el => {
-    const key = el.getAttribute("data-i18n-title");
-    if (!key) return;
-    const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
-    el.setAttribute("title", text);
-  });
-
-  // 4) aria-labels
-  document.querySelectorAll("[data-i18n-aria]").forEach(el => {
-    const key = el.getAttribute("data-i18n-aria");
-    if (!key) return;
-    const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
-    el.setAttribute("aria-label", text);
-  });
-
-  // 5) data-i18n-empty (for static empty placeholders)
-  document.querySelectorAll("[data-i18n-empty]").forEach(el => {
-    const key = el.getAttribute("data-i18n-empty");
-    if (!key) return;
-    const text = dict[key] ?? TRANSLATIONS.en[key] ?? "";
-    el.textContent = text;
-  });
-
-  // 6) Update dynamic small pieces (today-date, quotes, etc.)
-  const todayDateEl = document.getElementById("today-date");
-  if (todayDateEl) {
-    todayDateEl.textContent = localizedDateString(lang, new Date());
-  }
-
-  const ovQuote = document.getElementById("ov-quote");
-  if (ovQuote) {
-    ovQuote.textContent = dict.quote_default ?? TRANSLATIONS.en.quote_default;
-  }
-
-  const motEl = document.getElementById("motivation-text");
-  if (motEl) {
-    motEl.textContent = dict.motivation_default ?? TRANSLATIONS.en.motivation_default;
-  }
-
-  // 7) Convert numeric displays if desired (elements with data-i18n-num)
+  // numeric localization for elements marked with data-i18n-num
   if (lang === "fa") {
     document.querySelectorAll("[data-i18n-num]").forEach(el => {
       el.textContent = toPersianDigits(el.textContent || "");
     });
   }
+
+  const dateEl = document.getElementById("today-date");
+  if (dateEl) dateEl.textContent = lang === "fa" ? new Date().toLocaleDateString("fa-IR") : new Date().toLocaleDateString("en-US");
 }
 
-// =============================
-// Storage and globals
-// =============================
-let habits = JSON.parse(localStorage.getItem("habits")) || [];
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let habitChart = null;
-let trashBuffer = [];
-
-// =============================
-// Common init (theme, language, RTL)
-// =============================
+// --- Theme & language common init ---
 function initCommon() {
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "light") document.body.classList.add("light-theme");
 
   const savedLang = localStorage.getItem("lang") || "en";
   document.documentElement.lang = savedLang;
+
   applyTranslations();
   applyRTLByLang();
+
+  // Fill profile greeting if present
+  const u = window.OOZAuth?.getCurrentUser?.();
+  const welcomeUser = document.getElementById("welcome-user");
+  if (u && welcomeUser) welcomeUser.textContent = `${TRANSLATIONS[savedLang].welcome_title.replace(", ooz", `, ${u.username}`)}`;
 }
 
-// RTL helper
 function applyRTLByLang() {
   const lang = document.documentElement.lang || "en";
   document.body.classList.toggle("rtl", lang === "fa");
 }
 
-// =============================
-// Home: Overview + Extras
-// =============================
+// --- Home overview ---
 function initHomeOverview() {
-  const ov = document.getElementById("overview");
-  if (!ov) return;
-
-  const habitsData = JSON.parse(localStorage.getItem("habits")) || [];
-  const tasksData = JSON.parse(localStorage.getItem("tasks")) || [];
-  const todayStr = toYMD(new Date());
-
-  const activeHabits = habitsData.length;
-  const tasksToday = tasksData.filter(t => t.date === todayStr).length;
-  const progressPercent = computeOverallProgress(habitsData);
-
   const elHabits = document.getElementById("ov-habits");
   const elTasksToday = document.getElementById("ov-tasks-today");
   const elProgBar = document.getElementById("ov-progress");
   const elProgText = document.getElementById("ov-progress-text");
+  const todayStr = toYMD(new Date());
+
+  const activeHabits = habits.length;
+  const tasksToday = tasks.filter(t => t.date === todayStr).length;
+  const progressPercent = computeOverallProgress(habits);
 
   if (elHabits) { elHabits.textContent = String(activeHabits); elHabits.setAttribute("data-i18n-num", ""); }
   if (elTasksToday) { elTasksToday.textContent = String(tasksToday); elTasksToday.setAttribute("data-i18n-num", ""); }
   if (elProgBar) elProgBar.style.width = `${progressPercent}%`;
-  if (elProgText) elProgText.textContent = `${progressPercent}%`;
-
-  applyTranslations();
+  if (elProgText) { elProgText.textContent = `${progressPercent}%`; elProgText.setAttribute("data-i18n-num", ""); }
 }
 
 function initHomeExtras() {
@@ -282,22 +240,23 @@ function initHomeExtras() {
 
   const motEl = document.getElementById("motivation-text");
   if (motEl) motEl.textContent = TRANSLATIONS[document.documentElement.lang || "en"].motivation_default;
+
+  const quoteEl = document.getElementById("ov-quote");
+  if (quoteEl) quoteEl.textContent = TRANSLATIONS[document.documentElement.lang || "en"].quote_default;
 }
 
-// =============================
-// Habits page
-// =============================
+// --- Habits page ---
 function initHabitsPage() {
   const list = document.getElementById("habits");
+  if (!list) return;
+
   const addBtn = document.getElementById("add-btn");
   const nameInput = document.getElementById("habit-input");
   const goalInput = document.getElementById("goal-input");
   const chartCanvas = document.getElementById("progressChart");
 
-  if (!list) return;
-
   function renderHabits() {
-    // remove any previous empty-state
+    // clear previous empty-state
     const prevEmpty = list.parentElement.querySelector(".empty-state");
     if (prevEmpty) prevEmpty.remove();
 
@@ -305,62 +264,45 @@ function initHabitsPage() {
     if (!habits || habits.length === 0) {
       const empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.setAttribute("data-i18n-empty", "empty_habits");
+      empty.textContent = TRANSLATIONS[document.documentElement.lang || "en"].empty_habits;
       list.parentElement.appendChild(empty);
       applyTranslations();
+      updateHabitStats();
+      updateHabitChart(chartCanvas);
       return;
     }
 
     habits.forEach((habit, index) => {
       const li = document.createElement("li");
       const progressPercent = safePercent(habit.streak, habit.goal);
-
       li.innerHTML = `
-        <div>
+        <div class="row">
           <strong>${habit.name}</strong>
-          <span style="display:block;margin-top:4px;">Streak: ${habit.streak}/${habit.goal} days (${progressPercent}%)</span>
-          <div style="background:#333;border-radius:6px;margin-top:8px;">
-            <div style="height:8px;width:${progressPercent}%;background:#6A0DAD;border-radius:6px;"></div>
-          </div>
+        </div>
+        <div class="dim">Streak: ${habit.streak}/${habit.goal} (${progressPercent}%)</div>
+        <div style="background:#333;border-radius:6px;margin-top:8px;">
+          <div style="height:8px;width:${progressPercent}%;background:#6A0DAD;border-radius:6px;"></div>
         </div>
       `;
-
       const btn = document.createElement("button");
-      btn.textContent = TRANSLATIONS[document.documentElement.lang || "en"].btn_done || "Done";
-      btn.addEventListener("click", () => markDone(index));
+      btn.textContent = TRANSLATIONS[document.documentElement.lang || "en"].btn_done;
+      btn.addEventListener("click", () => markHabitDone(index));
       li.appendChild(btn);
-
       list.appendChild(li);
     });
 
-    updateHabitChart(chartCanvas);
     updateHabitStats();
+    updateHabitChart(chartCanvas);
+    applyTranslations();
   }
 
-  function markDone(index) {
+  function markHabitDone(index) {
     const today = new Date().toDateString();
-    if (habits[index].lastDone === today) {
-      alert("Already marked today ✅");
-      return;
-    }
+    if (habits[index].lastDone === today) return;
     habits[index].streak = (parseInt(habits[index].streak || 0, 10) || 0) + 1;
     habits[index].lastDone = today;
     persistHabits();
     renderHabits();
-  }
-
-  function updateHabitChart(canvas) {
-    if (!canvas || typeof Chart === "undefined") return;
-    const ctx = canvas.getContext("2d");
-    const labels = habits.map(h => h.name);
-    const data = habits.map(h => safePercent(h.streak, h.goal));
-
-    if (habitChart) habitChart.destroy();
-    habitChart = new Chart(ctx, {
-      type: "bar",
-      data: { labels, datasets: [{ label: "Progress (%)", data, backgroundColor: "#6A0DAD" }] },
-      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
-    });
   }
 
   function updateHabitStats() {
@@ -377,21 +319,30 @@ function initHabitsPage() {
     elBest.textContent = String(best);
     elAvg.textContent = `${avg}%`;
 
-    // mark numbers for possible persian conversion
     elTotal.setAttribute("data-i18n-num", "");
     elBest.setAttribute("data-i18n-num", "");
     elAvg.setAttribute("data-i18n-num", "");
     applyTranslations();
   }
 
+  function updateHabitChart(canvas) {
+    if (!canvas || typeof Chart === "undefined") return;
+    const ctx = canvas.getContext("2d");
+    const labels = habits.map(h => h.name);
+    const data = habits.map(h => safePercent(h.streak, h.goal));
+
+    if (habitChart) habitChart.destroy();
+    habitChart = new Chart(ctx, {
+      type: "bar",
+      data: { labels, datasets: [{ label: "Progress (%)", data, backgroundColor: "#6A0DAD" }] },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+  }
+
   addBtn?.addEventListener("click", () => {
     const name = (nameInput?.value || "").trim();
     const goal = parseInt(goalInput?.value || "0", 10);
-    if (!name || !goal || goal <= 0) {
-      // inline simple alert — you can replace with inline error UI
-      alert("Enter habit name and valid goal.");
-      return;
-    }
+    if (!name || !goal || goal <= 0) return alert("Enter habit name and valid goal.");
     habits.push({ name, goal, streak: 0, lastDone: null });
     persistHabits();
     renderHabits();
@@ -402,9 +353,7 @@ function initHabitsPage() {
   renderHabits();
 }
 
-// =============================
-// Tasks page
-// =============================
+// --- Tasks page ---
 function initTasksPage() {
   const list = document.getElementById("task-list");
   if (!list) return;
@@ -427,21 +376,16 @@ function initTasksPage() {
   let calendarRef = getMonthRef(new Date());
 
   function renderTasks() {
-    // remove previous empty-state
     const prevEmpty = list.parentElement.querySelector(".empty-state");
     if (prevEmpty) prevEmpty.remove();
 
     list.innerHTML = "";
-
-    const filtered = tasks.filter(t => {
-      if (selectedDate) return t.date === selectedDate;
-      return true;
-    });
+    const filtered = tasks.filter(t => !selectedDate || t.date === selectedDate);
 
     if (!filtered || filtered.length === 0) {
       const empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.setAttribute("data-i18n-empty", "empty_tasks");
+      empty.textContent = TRANSLATIONS[document.documentElement.lang || "en"].empty_tasks;
       list.parentElement.appendChild(empty);
       applyTranslations();
       updateProductivity();
@@ -484,7 +428,7 @@ function initTasksPage() {
 
       const delBtn = document.createElement("button");
       delBtn.className = "delete-btn";
-      delBtn.textContent = TRANSLATIONS[document.documentElement.lang || "en"].btn_delete || "Delete";
+      delBtn.textContent = TRANSLATIONS[document.documentElement.lang || "en"].btn_delete;
       delBtn.addEventListener("click", () => softDeleteTask(task, renderTasks, updateProductivity, renderTaskStats));
 
       actions.appendChild(delBtn);
@@ -495,15 +439,13 @@ function initTasksPage() {
 
     updateProductivity();
     renderTaskStats();
+    applyTranslations();
   }
 
   addTaskBtn?.addEventListener("click", () => {
     const name = (nameInput?.value || "").trim();
     const date = dateInput?.value || "";
-    if (!name || !date) {
-      alert("Enter task name and date.");
-      return;
-    }
+    if (!name || !date) return alert("Enter task name and date.");
     tasks.push({ name, date, done: false });
     persistTasks();
     renderTasks();
@@ -521,13 +463,7 @@ function initTasksPage() {
     if (!prodBar || !prodText) return;
     const todayStr = toYMD(new Date());
     const todayTasks = tasks.filter(t => t.date === todayStr);
-    if (todayTasks.length === 0) {
-      prodBar.style.width = "0%";
-      prodText.textContent = "0%";
-      return;
-    }
-    const doneCount = todayTasks.filter(t => t.done).length;
-    const pct = Math.round((doneCount / todayTasks.length) * 100);
+    const pct = todayTasks.length === 0 ? 0 : Math.round((todayTasks.filter(t => t.done).length / todayTasks.length) * 100);
     prodBar.style.width = `${pct}%`;
     prodText.textContent = `${pct}%`;
     prodText.setAttribute("data-i18n-num", "");
@@ -628,9 +564,7 @@ function initTasksPage() {
   renderCalendar();
 }
 
-// =============================
-// Settings page
-// =============================
+// --- Settings page ---
 function initSettingsPage() {
   const container = document.getElementById("settings");
   if (!container) return;
@@ -643,6 +577,12 @@ function initSettingsPage() {
   const exportBtn = document.getElementById("export-data");
   const importBtn = document.getElementById("import-data");
   const importFile = document.getElementById("import-file");
+
+  const profileName = document.getElementById("profile-name");
+
+  // Fill profile
+  const u = window.OOZAuth?.getCurrentUser?.();
+  if (u && profileName) profileName.textContent = `Signed in as ${u.username} (${u.email})`;
 
   themeBtn?.addEventListener("click", () => {
     document.body.classList.toggle("light-theme");
@@ -663,16 +603,24 @@ function initSettingsPage() {
 
   clearBtn?.addEventListener("click", () => {
     if (!confirm("Are you sure you want to clear all data?")) return;
-    localStorage.removeItem("habits");
-    localStorage.removeItem("tasks");
-    habits = [];
-    tasks = [];
+    const uid = getUserId();
+    if (uid) {
+      window.OOZUserStore.remove(uid, "habits");
+      window.OOZUserStore.remove(uid, "tasks");
+      habits = [];
+      tasks = [];
+    } else {
+      localStorage.removeItem("habits");
+      localStorage.removeItem("tasks");
+      habits = [];
+      tasks = [];
+    }
     alert("All data cleared ✅");
     location.reload();
   });
 
   exportBtn?.addEventListener("click", () => {
-    const payload = { exportedAt: new Date().toISOString(), habits, tasks };
+    const payload = { exportedAt: new Date().toISOString(), userId: getUserId(), habits, tasks };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -690,11 +638,10 @@ function initSettingsPage() {
     try {
       const text = await file.text();
       const payload = JSON.parse(text);
-      if (!payload || typeof payload !== "object") throw new Error("Invalid JSON");
       habits = Array.isArray(payload.habits) ? payload.habits : [];
       tasks = Array.isArray(payload.tasks) ? payload.tasks : [];
-      localStorage.setItem("habits", JSON.stringify(habits));
-      localStorage.setItem("tasks", JSON.stringify(tasks));
+      persistHabits();
+      persistTasks();
       alert("Data imported successfully ✅");
       location.reload();
     } catch (err) {
@@ -704,11 +651,15 @@ function initSettingsPage() {
       e.target.value = "";
     }
   });
+
+  // Logout button (if exists)
+  const logoutBtn = document.getElementById("logout-btn");
+  logoutBtn?.addEventListener("click", () => {
+    window.oozLogout?.();
+  });
 }
 
-// =============================
-// Keyboard shortcuts (use e.code for keyboard layout independence)
-// =============================
+// --- Keyboard shortcuts (use e.code) ---
 function initShortcuts() {
   document.addEventListener("keydown", (e) => {
     const active = document.activeElement;
@@ -752,17 +703,15 @@ function initShortcuts() {
     }
 
     if (e.key === "Escape") {
-      if (document.getElementById("calendar-grid")) {
-        if (typeof renderTasks === "function") renderTasks();
-        if (typeof renderCalendar === "function") renderCalendar();
+      const calGrid = document.getElementById("calendar-grid");
+      if (calGrid) {
+        // No special state to clear here; could implement clearing selectedDate if tracked globally
       }
     }
   });
 }
 
-// =============================
-// Toast (Undo) helpers
-// =============================
+// --- Toast (Undo) ---
 function showToast(message, onUndo) {
   const toast = document.getElementById("toast");
   const text = document.getElementById("toast-text");
@@ -821,11 +770,9 @@ function softDeleteTask(task, rerenderTasks, updateProductivity, renderStats) {
   });
 }
 
-// =============================
-// Helpers (shared)
-// =============================
-function persistHabits() { localStorage.setItem("habits", JSON.stringify(habits)); }
-function persistTasks() { localStorage.setItem("tasks", JSON.stringify(tasks)); }
+// --- Shared helpers ---
+function persistHabits() { setHabits(habits); }
+function persistTasks() { setTasks(tasks); }
 
 function safePercent(streak, goal) {
   const g = Math.max(1, parseInt(goal || 1, 10));
@@ -853,9 +800,7 @@ function parseYMD(str) {
 function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 function getMonthRef(d) { return { year: d.getFullYear(), month: d.getMonth() }; }
 
-// =============================
-// Boot sequence
-// =============================
+// --- Boot ---
 window.addEventListener("DOMContentLoaded", () => {
   initCommon();
   initHomeOverview();
