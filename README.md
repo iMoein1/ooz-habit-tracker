@@ -114,5 +114,5 @@ Open a Pull Request
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
 
-<p align="center"> Made with ❤️ by ooz </p
+ Made with ❤️ by ooz 
 
